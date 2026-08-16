@@ -1,0 +1,367 @@
+﻿{
+  "type": "FeatureCollection",
+  "name": "pontos_aldeias",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4674" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1852",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Bateria",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 160,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Aldeia indígena do povo Wai Wai localizada na porção norte da calha do Rio Mapuera.",
+        "coord_lat": -0.018564,
+        "coord_long": -58.102019,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-58.102019, -0.018564]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1802",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Ponkuru",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 145,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Comunidade tradicional Wai Wai no curso médio-alto do Rio Mapuera.",
+        "coord_lat": -0.436750,
+        "coord_long": -58.086369,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-58.086369, -0.436750]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1801",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Tamyuru",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 175,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Comunidade Wai Wai da Calha Norte com forte organização sociopolítica e produção artesanal ancestral.",
+        "coord_lat": -0.556244,
+        "coord_long": -58.096106,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-58.096106, -0.556244]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1806",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Polo Mapuera",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 2250,
+        "e_polo_base": true,
+        "unidade_saude": "Polo Base de Saúde Indígena com UBSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Principal centro demográfico, educacional e de saúde do povo Wai Wai na Calha Norte do Pará.",
+        "coord_lat": -0.698644,
+        "coord_long": -57.973544,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.973544, -0.698644]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "4698",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Placa",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 130,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Comunidade indígena Wai Wai próxima aos tributários da Bacia do Mapuera.",
+        "coord_lat": -0.849722,
+        "coord_long": -57.664722,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.664722, -0.849722]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "5201",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Katwaru",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 125,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Aldeia Wai Wai integrante do território contíguo da TI Trombetas/Mapuera.",
+        "coord_lat": -0.909920,
+        "coord_long": -57.653460,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.653460, -0.909920]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "5202",
+        "cod_ti": "30501",
+        "nome_aldei": "Aldeia Kukua",
+        "terra_indigena": "TI Trombetas/Mapuera",
+        "etnia_predominante": "Wai Wai",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Mapuera",
+        "populacao_estimada": 110,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Aldeia tradicional da calha do Rio Mapuera preservando modos de vida e cosmologia Wai Wai.",
+        "coord_lat": -0.915253,
+        "coord_long": -57.634951,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.634951, -0.915253]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1860",
+        "cod_ti": "68101",
+        "nome_aldei": "Aldeia Paraíso",
+        "terra_indigena": "TI Kaxuyana-Tunayana",
+        "etnia_predominante": "Kaxuyana / Tunayana",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Cachorro / Rio Katxuru",
+        "populacao_estimada": 190,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Aldeia histórica do povo Kaxuyana reconquistando seu território ancestral na Bacia do Katxuru.",
+        "coord_lat": -0.933169,
+        "coord_long": -57.617189,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.617189, -0.933169]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1862",
+        "cod_ti": "68101",
+        "nome_aldei": "Aldeia Takará",
+        "terra_indigena": "TI Kaxuyana-Tunayana",
+        "etnia_predominante": "Kaxuyana / Tunayana",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Cachorro / Katxuru",
+        "populacao_estimada": 165,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Comunidade tradicional Kaxuyana com sítios arqueológicos associados de cerâmica e arte rupestre.",
+        "coord_lat": -1.036011,
+        "coord_long": -57.445500,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.445500, -1.036011]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "5270",
+        "cod_ti": "68101",
+        "nome_aldei": "Aldeia Kecekere",
+        "terra_indigena": "TI Kaxuyana-Tunayana",
+        "etnia_predominante": "Kaxuyana / Kahyana",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Katxuru",
+        "populacao_estimada": 140,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Aldeia representativa da família linguística Karib no interflúvio Cachorro-Trombetas.",
+        "coord_lat": -1.056681,
+        "coord_long": -57.406239,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.406239, -1.056681]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "1863",
+        "cod_ti": "68101",
+        "nome_aldei": "Aldeia Kwanamari",
+        "terra_indigena": "TI Kaxuyana-Tunayana",
+        "etnia_predominante": "Kaxuyana / Tunayana",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Cachorro",
+        "populacao_estimada": 155,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Comunidade tradicional Kaxuyana na calha do Rio Cachorro.",
+        "coord_lat": -1.071736,
+        "coord_long": -57.347414,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.347414, -1.071736]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "5268",
+        "cod_ti": "68101",
+        "nome_aldei": "Aldeia Karana",
+        "terra_indigena": "TI Kaxuyana-Tunayana",
+        "etnia_predominante": "Tunayana / Kaxuyana",
+        "nommunic": "Oriximiná",
+        "nomuf": "Pará",
+        "rio_proximo": "Rio Katxuru",
+        "populacao_estimada": 180,
+        "e_polo_base": false,
+        "unidade_saude": "Atendimento Periódico EMSI (DSEI Guamá-Tocantins)",
+        "descricao_detalhada": "Aldeia tradicional do povo Tunayana ('povo da água') em área de refúgio histórico.",
+        "coord_lat": -1.121261,
+        "coord_long": -57.241600,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-57.241600, -1.121261]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "144",
+        "cod_ti": "47601",
+        "nome_aldei": "Aldeia Polo Manga",
+        "terra_indigena": "TI Uaçá",
+        "etnia_predominante": "Galibi-Marworno",
+        "nommunic": "Oiapoque",
+        "nomuf": "Amapá",
+        "rio_proximo": "Rio Uaçá",
+        "populacao_estimada": 1450,
+        "e_polo_base": true,
+        "unidade_saude": "Polo Base Manga (DSEI Amapá e Norte do Pará)",
+        "descricao_detalhada": "Polo de referência política e cultural do povo Galibi-Marworno no Rio Uaçá.",
+        "coord_lat": 3.723806,
+        "coord_long": -51.718083,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-51.718083, 3.723806]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "145",
+        "cod_ti": "47601",
+        "nome_aldei": "Aldeia Polo Kumenê",
+        "terra_indigena": "TI Uaçá",
+        "etnia_predominante": "Palikur-Arukwayene",
+        "nommunic": "Oiapoque",
+        "nomuf": "Amapá",
+        "rio_proximo": "Rio Urucauá",
+        "populacao_estimada": 1120,
+        "e_polo_base": true,
+        "unidade_saude": "Polo Base Kumenê (DSEI Amapá)",
+        "descricao_detalhada": "Maior centro e sede de referência cultural do povo Palikur-Arukwayene no Rio Urucauá.",
+        "coord_lat": 3.489728,
+        "coord_long": -51.481197,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-51.481197, 3.489728]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cod_aldeia": "157",
+        "cod_ti": "47601",
+        "nome_aldei": "Aldeia Polo Kumarumã",
+        "terra_indigena": "TI Uaçá",
+        "etnia_predominante": "Galibi-Marworno",
+        "nommunic": "Oiapoque",
+        "nomuf": "Amapá",
+        "rio_proximo": "Rio Uaçá",
+        "populacao_estimada": 2180,
+        "e_polo_base": true,
+        "unidade_saude": "Polo Base Kumarumã com UBSI (DSEI Amapá)",
+        "descricao_detalhada": "Maior concentração populacional indígena do Amapá, construída sobre palafitas nos campos alagados do Uaçá.",
+        "coord_lat": 3.383750,
+        "coord_long": -51.298222,
+        "datum": "SIRGAS 2000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-51.298222, 3.383750]
+      }
+    }
+  ]
+}

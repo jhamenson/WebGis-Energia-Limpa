@@ -1,0 +1,601 @@
+/**
+ * Map & Leaflet Custom Styles - PROJETO: ENERGIA LIMPA • ARQUEOLOGIA
+ * Single high-performance viewport, archaeological popups with correct text wrapping,
+ * non-overlapping coordinates & basemap bars, and GPS location badge.
+ */
+
+.map-viewport {
+  position: absolute;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  overflow: hidden;
+  background-color: #0d0c0a;
+}
+
+.maps-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-pane-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.leaflet-map-instance {
+  width: 100%;
+  height: 100%;
+  background: #0e0d0b;
+}
+
+/* Map Header Badge */
+.map-overlay-header {
+  position: absolute;
+  top: 14px;
+  left: calc(var(--sidebar-width) + 14px);
+  z-index: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(24, 21, 19, 0.88);
+  backdrop-filter: blur(10px);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  transition: left var(--transition-normal);
+  pointer-events: none;
+}
+
+#app-container.sidebar-collapsed .map-overlay-header {
+  left: 14px;
+}
+
+.map-badge-id {
+  font-size: 0.68rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  background: var(--color-terracotta);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.map-title-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Quick Zoom & Control Tools */
+.map-floating-tools {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.floating-btn-group {
+  display: flex;
+  flex-direction: column;
+  background: rgba(26, 23, 21, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.map-control-btn {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.map-control-btn:last-child {
+  border-bottom: none;
+}
+
+.map-control-btn:hover {
+  background: var(--color-terracotta);
+  color: #ffffff;
+}
+
+.map-control-btn.active {
+  background: rgba(234, 88, 12, 0.3);
+  color: var(--color-terracotta-light);
+}
+
+/* ==========================================================================
+   COLLAPSIBLE COORDINATES BUTTON & POPOVER (IMAGE 1 FIX)
+   ========================================================================== */
+.coord-control-container {
+  position: absolute;
+  bottom: 14px;
+  left: calc(var(--sidebar-width) + 14px);
+  z-index: 850;
+  transition: left var(--transition-normal);
+}
+
+#app-container.sidebar-collapsed .coord-control-container {
+  left: 14px;
+}
+
+.floating-coord-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(20, 18, 16, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  padding: 0.4rem 0.85rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.floating-coord-btn i {
+  color: var(--color-terracotta);
+  width: 14px;
+  height: 14px;
+}
+
+.floating-coord-btn .coord-arrow-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.floating-coord-btn:hover {
+  border-color: var(--color-terracotta);
+  background: rgba(30, 26, 23, 0.98);
+}
+
+.floating-coord-btn.active {
+  border-color: var(--color-terracotta);
+  background: rgba(36, 28, 24, 0.98);
+  box-shadow: 0 0 12px rgba(234, 88, 12, 0.25);
+}
+
+.floating-coord-btn.active .coord-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.coord-popover-box {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: rgba(20, 18, 16, 0.97);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.coord-popover-box.open {
+  display: flex;
+}
+
+.coord-popover-header {
+  padding: 0.55rem 0.85rem;
+  background: rgba(34, 28, 25, 0.9);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.coord-popover-body {
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+}
+
+.coord-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.25rem;
+}
+
+.coord-row.full {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.coord-lbl {
+  color: var(--text-muted);
+}
+
+.coord-val {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.badge-sirgas {
+  background: rgba(234, 88, 12, 0.25);
+  color: var(--color-terracotta-light);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.68rem;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   BASEMAP SWITCHER DROPDOWN (IMAGE 2 FIX)
+   ========================================================================== */
+.basemap-control-container {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 850;
+}
+
+.floating-basemap-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(20, 18, 16, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  padding: 0.45rem 0.95rem;
+  color: var(--text-primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.floating-basemap-btn i {
+  color: #38bdf8;
+  width: 15px;
+  height: 15px;
+}
+
+.floating-basemap-btn .basemap-arrow-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.floating-basemap-btn:hover {
+  border-color: #38bdf8;
+  background: rgba(24, 28, 32, 0.98);
+}
+
+.floating-basemap-btn.active {
+  border-color: #38bdf8;
+  background: rgba(18, 30, 40, 0.98);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.floating-basemap-btn.active .basemap-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.basemap-dropdown-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: rgba(20, 18, 16, 0.97);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.basemap-dropdown-menu.open {
+  display: flex;
+}
+
+.basemap-menu-header {
+  padding: 0.55rem 0.85rem;
+  background: rgba(30, 26, 23, 0.9);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.basemap-menu-items {
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.basemap-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.basemap-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.basemap-menu-item.active {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+}
+
+.basemap-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.basemap-item-text strong {
+  font-size: 0.76rem;
+  color: var(--text-primary);
+}
+
+.basemap-item-text span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   POPUP CARD ARTIFACT STYLES (CORRECT WRAPPING & BUTTONS)
+   ========================================================================== */
+.leaflet-popup-content-wrapper {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-medium) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  font-family: var(--font-main) !important;
+  min-width: 320px !important;
+  max-width: 380px !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-medium) !important;
+}
+
+.popup-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.popup-header {
+  padding: 0.85rem 1.1rem;
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(217, 119, 6, 0.08));
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.popup-header.sitio-header {
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.35), rgba(180, 83, 9, 0.2));
+  border-bottom: 1px solid rgba(234, 88, 12, 0.4);
+}
+
+.popup-header.ti-header {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1));
+}
+
+.popup-header.rio-header {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(6, 182, 212, 0.1));
+}
+
+.popup-category {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-terracotta-light);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.popup-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.popup-body {
+  padding: 0.85rem 1.1rem;
+}
+
+.popup-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  line-height: 1.45;
+}
+
+.popup-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.popup-data-cell {
+  background: var(--bg-tertiary);
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.popup-data-cell.full-width {
+  grid-column: 1 / -1;
+}
+
+.popup-data-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.popup-data-val {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.popup-footer {
+  padding: 0.75rem 1.1rem;
+  background: rgba(18, 16, 14, 0.75);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.popup-btn {
+  background: var(--color-terracotta);
+  border: none;
+  color: #ffffff;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.popup-btn:hover {
+  background: var(--color-terracotta-light);
+}
+
+/* Markers */
+.aldeia-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.custom-aldeia-marker {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-pin {
+  width: 26px;
+  height: 26px;
+  background: #f59e0b;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.marker-pin.polo {
+  background: #10b981;
+  width: 30px;
+  height: 30px;
+  border-color: #ffffff;
+}
+
+.marker-pin i, .marker-pin svg {
+  width: 14px;
+  height: 14px;
+  stroke: #ffffff;
+}
+
+.marker-pulse-ring {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.4);
+  animation: markerPulse 2.4s infinite ease-out;
+  z-index: 1;
+}
+
+@keyframes markerPulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.custom-aldeia-marker:hover .marker-pin {
+  transform: scale(1.25);
+}
