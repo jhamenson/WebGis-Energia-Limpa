@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PROJETO: ENERGIA LIMPA • WebGIS Arqueológico & Territorial (SIRGAS 2000)</title>
-  <meta name="description" content="WebGIS Arqueológico e Territorial do Projeto Energia Limpa - Vida Sustentável. Mapeamento de Sítios Arqueológicos IPHAN, Terras Indígenas e Recursos Hídricos em SIRGAS 2000.">
+  <title>PROJETO: ENERGIA LIMPA • Mapeamento das Áreas de Pesquisa (SIRGAS 2000)</title>
+  <meta name="description" content="WebGIS Territorial e Socioambiental do Projeto Energia Limpa - Vida Sustentável. Mapeamento das Áreas de Pesquisa, Terras Indígenas, Aldeias e Recursos Hídricos em SIRGAS 2000.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
@@ -34,15 +34,15 @@
         <img src="assets/logo.png" alt="Logo Energia Limpa - Vida Sustentável" class="brand-logo-img">
         <div class="brand-text">
           <h1>PROJETO: ENERGIA LIMPA</h1>
-          <p>Módulo Arqueológico • Calha Norte & Complexo do Oiapoque</p>
+          <p>Mapeamento das Áreas de Pesquisa • Calha Norte & Complexo do Oiapoque</p>
         </div>
       </div>
 
-      <!-- Global Search Autocomplete (2,670+ Sites, Villages, Lands, Rivers) -->
+      <!-- Global Search Autocomplete (Villages, Lands, Rivers) -->
       <div class="header-search-box">
         <div class="search-input-wrapper">
           <i data-lucide="search"></i>
-          <input type="text" id="global-search-input" class="header-search-input" placeholder="Buscar sítio arqueológico, código IPHAN, aldeia, TI..." autocomplete="off">
+          <input type="text" id="global-search-input" class="header-search-input" placeholder="Buscar aldeia, terra indígena, rio ou município..." autocomplete="off">
           <button id="search-clear-btn" class="search-clear-btn" title="Limpar busca">
             <i data-lucide="x"></i>
           </button>
@@ -52,7 +52,7 @@
 
       <!-- Action Controls -->
       <div class="header-actions">
-        <button id="btn-toggle-table" class="header-btn" onclick="window.AttributeTable ? window.AttributeTable.toggle() : null" title="Abrir / Fechar Tabela de Atributos">
+        <button id="btn-toggle-table" class="header-btn" title="Abrir Tabela de Atributos">
           <i data-lucide="table-2"></i> <span>Tabela de Atributos</span>
         </button>
 
@@ -63,20 +63,20 @@
     </header>
 
     <!-- ====================================================================
-         SIDEBAR (ARCHAEOLOGICAL INTERFACE)
+         SIDEBAR
          ==================================================================== -->
     <aside class="geoportal-sidebar">
-      <!-- Navigation Tabs (Clean 3 Tabs: Camadas, Estatísticas, Dicionário) -->
+      <!-- Navigation Tabs (Camadas, Estatísticas, Dicionário) -->
       <nav class="sidebar-nav-tabs">
         <button class="sidebar-tab-btn active" data-tab="layers" title="Catálogo de Camadas">
           <i data-lucide="layers"></i>
           <span>Camadas</span>
         </button>
-        <button class="sidebar-tab-btn" data-tab="stats" title="Estatísticas e Painel Arqueológico">
+        <button class="sidebar-tab-btn" data-tab="stats" title="Estatísticas e Painel Territorial">
           <i data-lucide="bar-chart-3"></i>
           <span>Estatísticas</span>
         </button>
-        <button class="sidebar-tab-btn" data-tab="metadata" title="Dicionário Arqueológico & Etnológico">
+        <button class="sidebar-tab-btn" data-tab="metadata" title="Dicionário de Etnias & Rios">
           <i data-lucide="book-open"></i>
           <span>Dicionário</span>
         </button>
@@ -85,8 +85,8 @@
       <!-- TAB 1: CAMADAS -->
       <div id="tab-layers" class="sidebar-tab-content active">
         <div class="section-header">
-          <h2><i data-lucide="flame"></i> Catálogo de Camadas</h2>
-          <span class="count-badge">4 Camadas</span>
+          <h2><i data-lucide="shield"></i> Catálogo de Camadas</h2>
+          <span class="count-badge">3 Camadas</span>
         </div>
 
         <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.4">
@@ -95,7 +95,7 @@
 
         <div id="layer-catalog-tree">
           <div style="padding:1.5rem;text-align:center;color:var(--text-muted)">
-            <i data-lucide="loader-2" class="spin"></i> Carregando patrimônio arqueológico e camadas WebGIS...
+            <i data-lucide="loader-2" class="spin"></i> Carregando camadas territoriais...
           </div>
         </div>
       </div>
@@ -103,41 +103,41 @@
       <!-- TAB 2: ESTATÍSTICAS -->
       <div id="tab-stats" class="sidebar-tab-content">
         <div class="section-header">
-          <h2><i data-lucide="pie-chart"></i> Painel Arqueológico & Territorial</h2>
+          <h2><i data-lucide="pie-chart"></i> Painel Territorial & Comunitário</h2>
         </div>
 
         <!-- KPI Cards -->
         <div class="stats-card-grid">
-          <div class="stat-kpi-card">
-            <span class="stat-kpi-label">Sítios Arqueológicos</span>
-            <span id="kpi-total-sitios" class="stat-kpi-value" style="color:#ea580c">2.670</span>
-            <span class="stat-kpi-sub">Cadastro Nacional IPHAN</span>
-          </div>
           <div class="stat-kpi-card">
             <span class="stat-kpi-label">Área Protegida</span>
             <span id="kpi-total-area" class="stat-kpi-value" style="color:#10b981">7.73 M ha</span>
             <span class="stat-kpi-sub">6 Terras Indígenas</span>
           </div>
           <div class="stat-kpi-card">
-            <span class="stat-kpi-label">População Tradicional</span>
-            <span id="kpi-total-pop" class="stat-kpi-value" style="color:#f59e0b">~15.800</span>
-            <span class="stat-kpi-sub">Etnias Karib / Aruak / Kréyol</span>
+            <span class="stat-kpi-label">Aldeias do Projeto</span>
+            <span id="kpi-total-aldeias" class="stat-kpi-value" style="color:#fbbf24">15 Aldeias</span>
+            <span class="stat-kpi-sub">5 Polos Base com Saúde</span>
           </div>
           <div class="stat-kpi-card">
-            <span class="stat-kpi-label">Aldeias Mapeadas</span>
-            <span id="kpi-total-aldeias" class="stat-kpi-value" style="color:#38bdf8">15 Aldeias</span>
-            <span class="stat-kpi-sub">5 Polos Base com UBSI</span>
+            <span class="stat-kpi-label">População Beneficiária</span>
+            <span id="kpi-total-pop" class="stat-kpi-value" style="color:#f59e0b">~15.800</span>
+            <span class="stat-kpi-sub">Povos Karib, Aruak e Kréyol</span>
+          </div>
+          <div class="stat-kpi-card">
+            <span class="stat-kpi-label">Bacias Hidrográficas</span>
+            <span id="kpi-total-bacias" class="stat-kpi-value" style="color:#0ea5e9">4 Bacias</span>
+            <span class="stat-kpi-sub">Trombetas, Mapuera, Nhamundá, Uaçá</span>
           </div>
         </div>
 
-        <!-- Chart 1: Sítios por Classificação -->
+        <!-- Chart 1: Distribuição de Aldeias por Povo/Etnia -->
         <div class="chart-wrapper-card">
           <div class="chart-title">
-            <span>Sítios por Horizonte Arqueológico</span>
-            <i data-lucide="archive" style="width:14px;height:14px;color:var(--color-terracotta)"></i>
+            <span>Aldeias por Povo / Etnia</span>
+            <i data-lucide="users" style="width:14px;height:14px;color:var(--color-terracotta)"></i>
           </div>
           <div class="chart-canvas-box">
-            <canvas id="chart-sitios-classif"></canvas>
+            <canvas id="chart-etnias-dist"></canvas>
           </div>
         </div>
 
@@ -155,8 +155,8 @@
         <!-- Chart 3: Distribuição Demográfica -->
         <div class="chart-wrapper-card">
           <div class="chart-title">
-            <span>População por Terra Indígena</span>
-            <i data-lucide="users" style="width:14px;height:14px;color:var(--text-muted)"></i>
+            <span>População Estimada por TI</span>
+            <i data-lucide="heart-handshake" style="width:14px;height:14px;color:var(--text-muted)"></i>
           </div>
           <div class="chart-canvas-box">
             <canvas id="chart-population"></canvas>
@@ -164,42 +164,68 @@
         </div>
       </div>
 
-      <!-- TAB 3: DICIONÁRIO & METADADOS -->
+      <!-- TAB 3: DICIONÁRIO & ETNO-HIDROGRAFIA -->
       <div id="tab-metadata" class="sidebar-tab-content">
         <div class="section-header">
-          <h2><i data-lucide="book-open"></i> Dicionário Arqueológico & Territorial</h2>
+          <h2><i data-lucide="book-open"></i> Dicionário de Etnias & Rios</h2>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:0.85rem">
+          <!-- ETNIAS -->
           <div class="layer-item-card">
-            <span class="badge badge-terracotta" style="align-self:flex-start">Classificação IPHAN</span>
-            <strong style="font-size:0.88rem;color:#ea580c;display:block;margin:0.25rem 0">Sítios Pré-coloniais</strong>
+            <span class="badge badge-amber" style="align-self:flex-start">Povo Indígena</span>
+            <strong style="font-size:0.88rem;color:#fbbf24;display:block;margin:0.25rem 0">Povo Wai Wai</strong>
             <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
-              Ocupações humanas pré-cabralinas (10.000 AP - 1500 DC). Caracterizam-se por horizontes de Terra Preta Arqueológica (TPA), montículos cerâmicos (tradições Konduri, Pocó, Koriabo, Aristé) e indústrias líticas.
+              Família linguística <strong>Karib</strong>. Habitantes da bacia do Rio Mapuera e Trombetas na Calha Norte do Pará. Mestres canoeiros e artesãos, com a Aldeia Polo Mapuera como seu maior centro sociopolítico.
             </p>
           </div>
 
           <div class="layer-item-card">
-            <span class="badge badge-amber" style="align-self:flex-start">Classificação IPHAN</span>
-            <strong style="font-size:0.88rem;color:#f59e0b;display:block;margin:0.25rem 0">Sítios Históricos & Contato</strong>
+            <span class="badge badge-emerald" style="align-self:flex-start">Povo Indígena</span>
+            <strong style="font-size:0.88rem;color:#10b981;display:block;margin:0.25rem 0">Povo Galibi-Marworno</strong>
             <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
-              Assentamentos coloniais, antigas missões religiosas, fortificações fluviais, ruínas e sítios de contato interétnico dos séculos XVI a XIX nas calhas dos rios Trombetas, Amazonas e Oiapoque.
+              Língua <strong>Kréyol</strong> e família <strong>Aruak</strong>. Vivem no Complexo do Oiapoque/AP (TI Uaçá). Conhecidos como povo anfíbio pelos lagos e campos alagados, com destaque para a Aldeia Kumarumã (construída sobre palafitas).
             </p>
           </div>
 
           <div class="layer-item-card">
-            <span class="badge badge-emerald" style="align-self:flex-start">Território Indígena</span>
-            <strong style="font-size:0.88rem;color:#10b981;display:block;margin:0.25rem 0">Complexo Trombetas/Mapuera</strong>
+            <span class="badge badge-cyan" style="align-self:flex-start">Povo Indígena</span>
+            <strong style="font-size:0.88rem;color:#38bdf8;display:block;margin:0.25rem 0">Povo Palikur-Arukwayene</strong>
             <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
-              3.970.898 ha • Povos Wai Wai, Hixkaryana, Tunayana, Kaxuyana. Bacia do Rio Trombetas e Mapuera.
+              Família linguística <strong>Aruak</strong>. Ocupam a calha do Rio Urucauá no Oiapoque/AP, com sede na Aldeia Polo Kumenê. Possuem rica cosmologia astronômica ancestral e domínio sobre os cursos d'água.
             </p>
           </div>
 
           <div class="layer-item-card">
-            <span class="badge badge-cyan" style="align-self:flex-start">Complexo Transfronteiriço</span>
-            <strong style="font-size:0.88rem;color:#38bdf8;display:block;margin:0.25rem 0">Complexo do Oiapoque</strong>
+            <span class="badge badge-amber" style="align-self:flex-start">Povo Indígena</span>
+            <strong style="font-size:0.88rem;color:#ea580c;display:block;margin:0.25rem 0">Povos Kaxuyana e Tunayana</strong>
             <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
-              Terras Indígenas Uaçá, Juminá e Galibi. Povos Karipuna, Galibi-Marworno, Palikur e Galibi (Kali'na).
+              Família linguística <strong>Karib</strong>. Habitantes das cabeceiras dos rios Cachorro e Katxuru. 'Tunayana' significa literalmente <em>povo da água</em>, sendo protagonistas na demarcação de seu território tradicional.
+            </p>
+          </div>
+
+          <div class="layer-item-card">
+            <span class="badge badge-emerald" style="align-self:flex-start">Povo Indígena</span>
+            <strong style="font-size:0.88rem;color:#34d399;display:block;margin:0.25rem 0">Povo Hixkaryana</strong>
+            <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
+              Família linguística <strong>Karib</strong>. Tradicionalmente assentados ao longo do Rio Nhamundá (divisa Pará e Amazonas), com aldeias como Kassawá e Cafezal.
+            </p>
+          </div>
+
+          <!-- RIOS -->
+          <div class="layer-item-card">
+            <span class="badge badge-blue" style="align-self:flex-start">Recurso Hídrico</span>
+            <strong style="font-size:0.88rem;color:#0ea5e9;display:block;margin:0.25rem 0">Rio Mapuera</strong>
+            <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
+              Principal via fluvial de navegação e subsistência que corta a TI Trombetas/Mapuera de norte a sul, interligando aldeias como Bateria, Ponkuru, Tamyuru e Mapuera ao Rio Trombetas.
+            </p>
+          </div>
+
+          <div class="layer-item-card">
+            <span class="badge badge-blue" style="align-self:flex-start">Recurso Hídrico</span>
+            <strong style="font-size:0.88rem;color:#0ea5e9;display:block;margin:0.25rem 0">Rio Uaçá e Rio Oiapoque</strong>
+            <p style="font-size:0.75rem;color:var(--text-secondary);line-height:1.4">
+              Artérias vitais do extremo norte do Amapá e fronteira internacional com a Guiana Francesa. Compreendem extensas áreas inundáveis, igapós e estuários ricos em recursos pesqueiros.
             </p>
           </div>
         </div>
@@ -214,7 +240,7 @@
         <div id="map-container-1" class="map-pane-wrapper">
           <div class="map-overlay-header">
             <span class="map-badge-id">MAPA</span>
-            <span class="map-title-label">Patrimônio Arqueológico & Base Territorial</span>
+            <span class="map-title-label">Base Territorial & Comunidades do Projeto</span>
           </div>
           <div id="map1" class="leaflet-map-instance"></div>
         </div>
@@ -229,7 +255,7 @@
           <button id="btn-zoom-out" class="map-control-btn" title="Afastar Zoom">
             <i data-lucide="minus"></i>
           </button>
-          <button id="btn-zoom-home" class="map-control-btn" title="Centralizar Área de Estudo (Home)">
+          <button id="btn-zoom-home" class="map-control-btn" title="Centralizar Área do Projeto (Home)">
             <i data-lucide="home"></i>
           </button>
           <button id="btn-locate-user" class="map-control-btn" title="Minha Localização GPS Atual">
@@ -238,57 +264,128 @@
         </div>
       </div>
 
-      <!-- Live Coordinates Tracker in SIRGAS 2000 -->
-      <div class="map-coordinates-bar">
-        <div class="coord-item">Lat: <strong id="coord-lat">0.00000°</strong></div>
-        <div class="coord-divider"></div>
-        <div class="coord-item">Long: <strong id="coord-lng">0.00000°</strong></div>
-        <div class="coord-divider"></div>
-        <div class="coord-item"><span id="coord-utm"><span class="badge-sirgas">SIRGAS 2000</span> UTM 21S</span></div>
-        <div class="coord-divider"></div>
-        <div class="coord-item"><span id="coord-zoom">Zoom 6</span></div>
+      <!-- Live Coordinates: Collapsible Button + Popover Box (Image 1 Fix) -->
+      <div class="coord-control-container">
+        <button id="btn-coord-toggle" class="floating-coord-btn" title="Exibir / Ocultar Coordenadas">
+          <i data-lucide="map-pin"></i>
+          <span id="coord-btn-preview">SIRGAS 2000</span>
+          <i data-lucide="chevron-up" class="coord-arrow-icon"></i>
+        </button>
+
+        <div id="coord-popover-box" class="coord-popover-box">
+          <div class="coord-popover-header">
+            <i data-lucide="compass" style="width:13px;height:13px;color:#ea580c"></i>
+            <span>Coordenadas Geodésicas Oficiais</span>
+          </div>
+          <div class="coord-popover-body">
+            <div class="coord-row">
+              <span class="coord-lbl">Latitude:</span>
+              <strong id="coord-lat" class="coord-val">0.00000°</strong>
+            </div>
+            <div class="coord-row">
+              <span class="coord-lbl">Longitude:</span>
+              <strong id="coord-lng" class="coord-val">0.00000°</strong>
+            </div>
+            <div class="coord-row full">
+              <span class="coord-lbl">Projeção:</span>
+              <span id="coord-utm" class="coord-val"><span class="badge-sirgas">SIRGAS 2000</span> UTM 21S</span>
+            </div>
+            <div class="coord-row">
+              <span class="coord-lbl">Nível de Zoom:</span>
+              <span id="coord-zoom" class="coord-val">Zoom 6</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Basemap Switcher Floating Pill -->
-      <div class="basemap-switcher-pill">
-        <button class="basemap-option-btn active" data-basemap="dark">
-          <i data-lucide="moon" style="width:13px;height:13px"></i> Escuro
+      <!-- Basemap Switcher: Button + Dropdown Menu with Google Maps (Image 2 Fix) -->
+      <div class="basemap-control-container">
+        <button id="btn-basemap-toggle" class="floating-basemap-btn" title="Opções de Visualização de Mapas">
+          <i data-lucide="layers"></i>
+          <span id="active-basemap-label">Google Satélite HD</span>
+          <i data-lucide="chevron-up" class="basemap-arrow-icon"></i>
         </button>
-        <button class="basemap-option-btn" data-basemap="satellite">
-          <i data-lucide="globe" style="width:13px;height:13px"></i> Satélite
-        </button>
-        <button class="basemap-option-btn" data-basemap="topo">
-          <i data-lucide="mountain" style="width:13px;height:13px"></i> Relevo
-        </button>
-        <button class="basemap-option-btn" data-basemap="osm">
-          <i data-lucide="map" style="width:13px;height:13px"></i> OSM
-        </button>
+
+        <div id="basemap-dropdown-menu" class="basemap-dropdown-menu">
+          <div class="basemap-menu-header">
+            <i data-lucide="globe" style="width:13px;height:13px;color:#ea580c"></i>
+            <span>Visualização de Mapa Base</span>
+          </div>
+          <div class="basemap-menu-items">
+            <button class="basemap-menu-item active" data-basemap="googleHybrid">
+              <i data-lucide="sparkles" style="color:#38bdf8"></i>
+              <div class="basemap-item-text">
+                <strong>Google Híbrido HD</strong>
+                <span>Satélite de alta resolução com vias e rótulos</span>
+              </div>
+            </button>
+            <button class="basemap-menu-item" data-basemap="googleSat">
+              <i data-lucide="image" style="color:#0ea5e9"></i>
+              <div class="basemap-item-text">
+                <strong>Google Satélite Puro</strong>
+                <span>Imagem aérea de alta aproximação</span>
+              </div>
+            </button>
+            <button class="basemap-menu-item" data-basemap="satellite">
+              <i data-lucide="globe" style="color:#10b981"></i>
+              <div class="basemap-item-text">
+                <strong>Esri Satélite Global</strong>
+                <span>Cobertura contínua de satélite</span>
+              </div>
+            </button>
+            <button class="basemap-menu-item" data-basemap="dark">
+              <i data-lucide="moon" style="color:#ea580c"></i>
+              <div class="basemap-item-text">
+                <strong>Carto Dark Matter</strong>
+                <span>Tema escuro de alto contraste</span>
+              </div>
+            </button>
+            <button class="basemap-menu-item" data-basemap="topo">
+              <i data-lucide="mountain" style="color:#d97706"></i>
+              <div class="basemap-item-text">
+                <strong>Relevo Topográfico</strong>
+                <span>Curvas de nível e altimetria</span>
+              </div>
+            </button>
+            <button class="basemap-menu-item" data-basemap="osm">
+              <i data-lucide="map" style="color:#a8a29e"></i>
+              <div class="basemap-item-text">
+                <strong>OpenStreetMap Padrão</strong>
+                <span>Mapa de ruas e hidrografia</span>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
     </main>
 
     <!-- ====================================================================
-         BOTTOM ATTRIBUTE TABLE DRAWER
+         ATTRIBUTE TABLE MODAL / POP-UP (Fix Mobile & Screen Cutoff)
          ==================================================================== -->
-    <div id="attribute-table-drawer" class="attribute-table-drawer">
-      <div class="attr-table-header">
-        <div class="attr-header-left">
-          <strong style="font-size:0.9rem;display:flex;align-items:center;gap:0.4rem;color:var(--color-terracotta-light)">
-            <i data-lucide="table"></i> Tabela de Atributos (SIRGAS 2000)
-          </strong>
-          <select id="attr-layer-select" class="attr-layer-select"></select>
-          <input type="text" id="attr-search-input" class="attr-search-input" placeholder="Filtrar dados ou código IPHAN...">
+    <div id="attribute-table-modal-backdrop" class="modal-backdrop">
+      <div id="attribute-table-modal" class="modal-dialog table-modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-lucide="table-2" style="color:#ea580c"></i>
+            <span>Tabela de Atributos • SIRGAS 2000</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <select id="attr-layer-select" class="attr-layer-select"></select>
+            <input type="text" id="attr-search-input" class="attr-search-input" placeholder="Filtrar por nome, etnia ou município...">
+            <button id="btn-export-csv" class="popup-btn" style="background:#ea580c;color:#fff">
+              <i data-lucide="download" style="width:13px;height:13px"></i> CSV
+            </button>
+            <button id="btn-close-table-modal" class="modal-close-btn" title="Fechar Tabela (Esc)">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
         </div>
-        <div class="attr-header-right">
-          <span id="attr-row-count" style="font-size:0.75rem;color:var(--text-muted)">0 registros</span>
-          <button id="btn-export-csv" class="popup-btn">
-            <i data-lucide="download" style="width:13px;height:13px"></i> Exportar CSV
-          </button>
-          <button id="btn-close-table" class="brand-toggle-btn" style="width:30px;height:30px" onclick="window.AttributeTable ? window.AttributeTable.close() : null" title="Fechar Tabela (Esc)">
-            <i data-lucide="chevron-down"></i>
-          </button>
+        <div class="table-modal-subbar">
+          <span id="attr-row-count">0 registros</span>
+          <span style="font-size:0.75rem;color:#10b981">Sistema de Coordenadas Oficial: SIRGAS 2000 (EPSG:4674)</span>
         </div>
+        <div id="attr-table-content" class="table-modal-content"></div>
       </div>
-      <div id="attr-table-content" class="attr-table-body"></div>
     </div>
   </div>
 
@@ -300,7 +397,7 @@
       <div class="modal-header">
         <div class="modal-title">
           <i data-lucide="printer" style="color:#ea580c"></i>
-          <span>Exportar Mapa Arqueológico & Territorial</span>
+          <span>Exportar Mapa Territorial & Socioambiental</span>
         </div>
         <button id="btn-close-export-modal" class="modal-close-btn">
           <i data-lucide="x"></i>
@@ -309,7 +406,7 @@
       <div class="modal-body">
         <div class="form-group">
           <label class="form-label">Título Principal do Mapa</label>
-          <input type="text" id="export-title-input" class="form-input" value="MAPA TEMÁTICO ARQUEOLÓGICO • PROJETO: ENERGIA LIMPA">
+          <input type="text" id="export-title-input" class="form-input" value="MAPA TEMÁTICO TERRITORIAL • PROJETO: ENERGIA LIMPA">
         </div>
         <div class="form-group">
           <label class="form-label">Subtítulo / Localização Geográfica</label>
@@ -324,7 +421,7 @@
         </div>
         <p style="font-size:0.75rem;color:var(--text-muted);background:var(--bg-tertiary);padding:0.75rem;border-radius:var(--radius-sm);line-height:1.4">
           <i data-lucide="info" style="width:13px;height:13px;vertical-align:middle;color:#ea580c"></i>
-          O mapa será exportado com a <strong>logo oficial do projeto</strong>, coordenadas geodésicas em <strong>SIRGAS 2000</strong>, rosa dos ventos, escala gráfica e fontes (IPHAN/FUNAI/IBGE/ANA).
+          O mapa será exportado com a <strong>logo oficial do projeto</strong>, coordenadas geodésicas em <strong>SIRGAS 2000</strong>, rosa dos ventos, escala gráfica e fontes oficiais (FUNAI/IBGE/ANA).
         </p>
       </div>
       <div class="modal-footer">
@@ -340,7 +437,7 @@
   <div id="toast-container" class="toast-container"></div>
 
   <!-- External Libraries -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>

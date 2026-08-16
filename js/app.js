@@ -104,21 +104,6 @@ class App {
   buildSearchIndex() {
     this.searchIndex = [];
 
-    // 1. Index Archaeological Sites (IPHAN)
-    const sitiosConfig = this.layerCatalog.layers.sitiosArqueologicos;
-    if (sitiosConfig && sitiosConfig.geoJsonData && sitiosConfig.geoJsonData.features) {
-      sitiosConfig.geoJsonData.features.forEach(f => {
-        const nome = f.properties.nome_formatado || f.properties.nome_sitio || "Sítio Arqueológico";
-        this.searchIndex.push({
-          title: nome,
-          subtitle: `${f.properties.classificacao || 'Pré-colonial'} • ${f.properties.codigo_oficial || 'IPHAN'} (${f.properties.tipo || 'Sítio'})`,
-          type: "Sítio Arqueológico",
-          feature: f,
-          layerId: "sitiosArqueologicos"
-        });
-      });
-    }
-
     // 2. Index Terras Indígenas
     const tiConfig = this.layerCatalog.layers.terrasIndigenas;
     if (tiConfig && tiConfig.geoJsonData && tiConfig.geoJsonData.features) {

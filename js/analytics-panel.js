@@ -1,12 +1,12 @@
 /**
- * Analytics Panel - PROJETO: ENERGIA LIMPA • ARQUEOLOGIA
- * Interactive charts & KPIs for Archaeological Heritage (IPHAN) and Indigenous Lands.
+ * Analytics Panel - PROJETO: ENERGIA LIMPA
+ * Interactive charts & KPIs for Indigenous Lands, Villages and Hydrography.
  */
 
 class AnalyticsPanel {
   constructor(layerCatalog) {
     this.layerCatalog = layerCatalog;
-    this.chartSitios = null;
+    this.chartEtnias = null;
     this.chartSuperficie = null;
     this.chartPopulation = null;
   }
@@ -17,11 +17,9 @@ class AnalyticsPanel {
   }
 
   calculateKPIs() {
-    const sitiosConfig = this.layerCatalog.layers.sitiosArqueologicos;
     const tiConfig = this.layerCatalog.layers.terrasIndigenas;
     const aldConfig = this.layerCatalog.layers.aldeias;
 
-    let totalSitios = sitiosConfig && sitiosConfig.geoJsonData && sitiosConfig.geoJsonData.features ? sitiosConfig.geoJsonData.features.length : 2670;
     let totalAreaHa = 7732454;
     let totalPop = 15870;
 
@@ -38,15 +36,15 @@ class AnalyticsPanel {
     const totalAldeias = aldConfig ? aldConfig.count : 15;
 
     // Update KPI card elements
-    const kpiSitios = document.getElementById("kpi-total-sitios");
     const kpiArea = document.getElementById("kpi-total-area");
     const kpiPop = document.getElementById("kpi-total-pop");
     const kpiAld = document.getElementById("kpi-total-aldeias");
+    const kpiBacias = document.getElementById("kpi-total-bacias");
 
-    if (kpiSitios) kpiSitios.textContent = totalSitios.toLocaleString('pt-BR');
     if (kpiArea) kpiArea.textContent = (totalAreaHa / 1000000).toFixed(2) + " M ha";
     if (kpiPop) kpiPop.textContent = "~" + totalPop.toLocaleString('pt-BR');
     if (kpiAld) kpiAld.textContent = `${totalAldeias} Aldeias`;
+    if (kpiBacias) kpiBacias.textContent = "4 Bacias";
   }
 
   renderCharts() {
@@ -55,24 +53,24 @@ class AnalyticsPanel {
       return;
     }
 
-    this.renderSitiosChart();
+    this.renderEtniasChart();
     this.renderSuperficieChart();
     this.renderPopulationChart();
   }
 
-  renderSitiosChart() {
-    const ctx = document.getElementById("chart-sitios-classif");
+  renderEtniasChart() {
+    const ctx = document.getElementById("chart-etnias-dist");
     if (!ctx) return;
 
-    if (this.chartSitios) this.chartSitios.destroy();
+    if (this.chartEtnias) this.chartEtnias.destroy();
 
-    this.chartSitios = new Chart(ctx, {
+    this.chartEtnias = new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: ["Pré-colonial", "Histórico", "Contato", "Sem Classificação"],
+        labels: ["Wai Wai", "Kaxuyana / Tunayana", "Galibi-Marworno", "Palikur-Arukwayene"],
         datasets: [{
-          data: [2140, 310, 85, 135],
-          backgroundColor: ["#ea580c", "#d97706", "#ca8a04", "#78716c"],
+          data: [7, 5, 2, 1], // 15 aldeias distribution
+          backgroundColor: ["#ea580c", "#d97706", "#10b981", "#0284c7"],
           borderColor: "#12100e",
           borderWidth: 2
         }]

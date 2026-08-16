@@ -1,7 +1,7 @@
 /**
- * Data Enhancer & Knowledge Base for WebGIS Arqueológico • Projeto: Energia Limpa
- * Enriches raw GeoJSON properties with IPHAN archaeological classifications,
- * ethnographic context, FUNAI official village attributes, and strict SIRGAS 2000 coordinates.
+ * Data Enhancer & Knowledge Base - PROJETO: ENERGIA LIMPA
+ * Ethnographic knowledge, official FUNAI village attributes,
+ * indigenous territories, hydrographic basins, and strict SIRGAS 2000 coordinates.
  */
 
 function cleanAccents(str) {
@@ -21,40 +21,83 @@ function cleanAccents(str) {
     .replace(/ÚÚ+/g, "Ú");
 }
 
-const ARCHAEOLOGICAL_KNOWLEDGE_BASE = {
-  classificacoes: {
-    "Pré-colonial": {
-      periodo: "Pré-Cabralino / Holoceno Superior (10.000 AP - 1500 DC)",
-      badgeColor: "#ea580c",
-      icon: "flame",
-      descricao: "Vestígios arqueológicos de ocupações humanas indígenas anteriores ao contato com colonizadores europeus. Inclui aterros cerâmicos, terra preta de índio (TPI), indústrias líticas e estruturas megalíticas."
+const ETNO_KNOWLEDGE_BASE = {
+  etnias: {
+    "Wai Wai": {
+      familia: "Karib",
+      regiao: "Calha Norte do Pará e Roraima (Bacia do Rio Mapuera e Trombetas)",
+      populacao: "Mais de 4.000 pessoas",
+      caracteristicas: "Conhecidos como mestres canoeiros e guardiões das matas setentrionais da Amazônia, com organização comunitária em torno de aldeias polo como Mapuera."
     },
-    "Histórico": {
-      periodo: "Pós-Contato / Colonial / Imperial (Séculos XVI ao XIX)",
-      badgeColor: "#d97706",
-      icon: "landmark",
-      descricao: "Estruturas, ruínas de fortificações, capelas, assentamentos ribeirinhos e missões religiosas fundadas a partir da presença europeia e da colonização amazônica."
+    "Galibi-Marworno": {
+      familia: "Kréyol (Língua de contato de base lexical francesa) / Aruak",
+      regiao: "Complexo do Oiapoque (Bacia do Rio Uaçá e campos inundáveis)",
+      populacao: "Aprox. 3.500 pessoas",
+      caracteristicas: "Povo anfíbio, mestres na navegação dos lagos e igapós do Amapá e construtores de aldeias sobre palafitas como Kumarumã."
     },
-    "Histórico e indígena": {
-      periodo: "Período de Contato e Missões (Séculos XVII e XVIII)",
-      badgeColor: "#b45309",
-      icon: "users",
-      descricao: "Sítios de contato interétnico e interação cultural contendo cerâmica de tradição indígena associada a artefatos manufaturados de ferro, vidro e faiança colonial."
+    "Palikur-Arukwayene": {
+      familia: "Aruak",
+      regiao: "Bacia do Rio Urucauá (TI Uaçá, Oiapoque/AP)",
+      populacao: "Aprox. 1.800 pessoas",
+      caracteristicas: "Tradicionais navegadores e astrônomos do Oiapoque, com profunda cosmologia ligada aos cursos d'água e constelações ancestrais."
     },
-    "Contato": {
-      periodo: "Fronteira Colonial / Século XVIII",
-      badgeColor: "#ca8a04",
-      icon: "compass",
-      descricao: "Assentamentos de transição e entrepostos comerciais fluviais nas calhas do Trombetas, Oiapoque e Amazonas."
+    "Kaxuyana": {
+      familia: "Karib",
+      regiao: "Bacia do Rio Cachorro e Rio Katxuru (TI Kaxuyana-Tunayana)",
+      populacao: "Aprox. 1.200 pessoas",
+      caracteristicas: "Habitantes ancestrais das cabeceiras dos afluentes do Trombetas, protagonistas do processo histórico de reconquista e demarcação de sua terra tradicional."
+    },
+    "Tunayana": {
+      familia: "Karib / Aruak",
+      regiao: "Interflúvio Katxuru-Trombetas",
+      populacao: "Aprox. 450 pessoas",
+      caracteristicas: "Autodenominados 'Povo da Água' (Tuna = água/rio), com rica cultura material e conexões históricas transfronteiriças."
+    },
+    "Hixkaryana": {
+      familia: "Karib",
+      regiao: "Bacia do Rio Nhamundá (Faro/PA e Nhamundá/AM)",
+      populacao: "Aprox. 1.500 pessoas",
+      caracteristicas: "Povo tradicional da divisa Pará-Amazonas, com reconhecida estrutura de aldeias ribeirinhas como Kassawá e Cafezal."
+    },
+    "Karipuna": {
+      familia: "Kréyol / Línguas Karib e Tupi",
+      regiao: "Bacia do Rio Curipi (TI Uaçá, Oiapoque/AP)",
+      populacao: "Aprox. 3.000 pessoas",
+      caracteristicas: "Comunidades tradicionais localizadas ao longo do Rio Curipi com forte identidade cultural e liderança nas organizações indígenas do Amapá."
     }
   },
 
-  tiposSitio: {
-    "Sítio": "Sítio Arqueológico a céu aberto ou ribeirinho com densa concentração de fragmentos cerâmicos, material lítico lascado/polido e horizonte antrópico.",
-    "Abrigo sob rocha": "Cavidade natural ou paleotoca utilizada para refúgio temporário, sepultamento ou suporte de painéis de arte rupestre.",
-    "Arte Rupestre": "Paredões e afloramentos rochosos com gravuras (petróglifos) e pinturas pré-coloniais representativas de fauna, figuras antropomorfas e cosmologia ancestral.",
-    "Estrutura Megalítica": "Monólitos e alinhamentos astronômicos de blocos de granito associados a rituais e observações celestes (ex: Megalitos do Calçoene / Oiapoque).",
-    "Terra Preta": "Solos antropogênicos férteis (Terra Preta de Índio) associados a assentamentos sedentários pré-coloniais densamente povoados."
+  rios: {
+    "Rio Mapuera": {
+      bacia: "Bacia Hidrográfica do Rio Trombetas / Amazonas",
+      extensao: "Principal via fluvial da TI Trombetas/Mapuera",
+      descricao: "Rio de águas claras com corredeiras e rica ictiofauna, eixo de transporte e sustento de dezenas de aldeias Wai Wai."
+    },
+    "Rio Trombetas": {
+      bacia: "Margem esquerda do Rio Amazonas",
+      extensao: "Mais de 750 km de extensão",
+      descricao: "Um dos mais importantes tributários do norte amazônico, com exuberante biodiversidade e complexos de lagos e florestas de terra firme."
+    },
+    "Rio Nhamundá": {
+      bacia: "Bacia do Baixo Amazonas",
+      extensao: "Divisa natural entre o Pará e o Amazonas",
+      descricao: "Histórico rio de águas escuras que abriga comunidades Hixkaryana e extensas áreas de várzea e castanhais nativos."
+    },
+    "Rio Uaçá": {
+      bacia: "Bacia Costeira do Extremo Norte do Amapá",
+      extensao: "Campos alagáveis e manguezais do Oiapoque",
+      descricao: "Sistema fluvial e lacustre pulsante que alimenta o território dos Galibi-Marworno e Karipuna."
+    },
+    "Rio Oiapoque": {
+      bacia: "Bacia Transfronteiriça Brasil - Guiana Francesa",
+      extensao: "Mais de 370 km de curso fluvial",
+      descricao: "Rio fronteiriço internacional, canal estratégico de comunicação entre povos indígenas transfronteiriços e o Oceano Atlântico."
+    },
+    "Rio Katxuru / Cachorro": {
+      bacia: "Alto Trombetas",
+      extensao: "Afluente direto do Rio Trombetas",
+      descricao: "Rio encachoeirado de floresta densa que corta o território dos povos Kaxuyana e Tunayana."
+    }
   }
 };
 
@@ -78,44 +121,6 @@ function getSIRGAS2000UTM(lng, lat) {
 }
 
 /**
- * Enhancer for IPHAN Archaeological Sites
- */
-window.enhanceSitioFeature = function(props, coords) {
-  const p = { ...props };
-  const lng = coords ? coords[0] : null;
-  const lat = coords ? coords[1] : null;
-
-  p.nome_formatado = cleanAccents(p.nome_sitio || p.identifica || "Sítio Arqueológico");
-  p.codigo_oficial = cleanAccents(p.codigo_iphan || p.co_iphan || "IPHAN-CNSA");
-  p.classificacao = cleanAccents(p.classificacao_arqueologica || p.ds_classif || "Pré-colonial");
-  p.tipo = cleanAccents(p.tipo_sitio || p.ds_tipo_be || "Sítio");
-
-  const classInfo = ARCHAEOLOGICAL_KNOWLEDGE_BASE.classificacoes[p.classificacao] || {
-    periodo: "Contexto Arqueológico Regional",
-    badgeColor: "#ea580c",
-    icon: "archive",
-    descricao: "Vestígio arqueológico registrado pelo IPHAN no Cadastro Nacional de Sítios Arqueológicos."
-  };
-
-  p.periodo_cronologico = classInfo.periodo;
-  p.badge_color = classInfo.badgeColor;
-  p.icon_tipo = classInfo.icon;
-  p.descricao_classificacao = classInfo.descricao;
-  p.descricao_tipo = ARCHAEOLOGICAL_KNOWLEDGE_BASE.tiposSitio[p.tipo] || "Assentamento ou registro arqueológico catalogado no SICG/IPHAN.";
-
-  p.datum_oficial = "SIRGAS 2000 (EPSG: 4674)";
-  if (lng !== null && lat !== null) {
-    p.coord_lat_deg = lat.toFixed(5) + "°";
-    p.coord_long_deg = lng.toFixed(5) + "°";
-    p.coord_lat_dms = toSIRGAS2000DMS(lat, true);
-    p.coord_long_dms = toSIRGAS2000DMS(lng, false);
-    p.utm_sirgas = getSIRGAS2000UTM(lng, lat);
-  }
-
-  return p;
-};
-
-/**
  * Enhancer for Terras Indígenas
  */
 window.enhanceTerraIndigenaFeature = function(props) {
@@ -129,13 +134,13 @@ window.enhanceTerraIndigenaFeature = function(props) {
       populacao_estimada: 4350,
       etnia_nome: "Wai Wai, Hixkaryana, Katuena, Xereu, Tunayana, Sikiyana",
       familia_linguistica: "Karib e Aruak",
-      fase_ti: "Regularizada",
+      fase_ti: "Regularizada / Homologada",
       decreto_homologacao: "Decreto Presidencial s/nº de 18/12/2009",
       municipios_lista: "Oriximiná, Faro, Nhamundá, Urucará, Caracaraí",
       uf_sigla: "PA / AM / RR",
       bacia_principal: "Bacia do Rio Trombetas / Rio Mapuera / Rio Cachorro",
       bioma: "Amazônia Setentrional",
-      descricao_etnoambiental: "Maior Terra Indígena contígua da Calha Norte do Pará."
+      descricao_etnoambiental: "Maior Terra Indígena contígua da Calha Norte do Pará, garantindo a sustentabilidade dos povos Wai Wai."
     },
     "kaxuyana-tunayana": {
       nome_oficial: "Terra Indígena Kaxuyana-Tunayana",
@@ -149,7 +154,7 @@ window.enhanceTerraIndigenaFeature = function(props) {
       uf_sigla: "PA / AM",
       bacia_principal: "Bacia do Rio Katxuru e Rio Trombetas",
       bioma: "Floresta Tropical Densa",
-      descricao_etnoambiental: "Território de refúgio histórico dos Kaxuyana e Tunayana."
+      descricao_etnoambiental: "Território tradicional de refúgio e reconquista histórica dos povos Kaxuyana e Tunayana."
     },
     "nhamundá/mapuera": {
       nome_oficial: "Terra Indígena Nhamundá/Mapuera",
@@ -161,15 +166,15 @@ window.enhanceTerraIndigenaFeature = function(props) {
       decreto_homologacao: "Decreto Presidencial nº 98.058 de 16/08/1989",
       municipios_lista: "Faro, Nhamundá, Oriximiná",
       uf_sigla: "PA / AM",
-      bacia_principal: "Bacia do Rio Nhamundá e Bacia do Rio Mapuera",
+      bacia_principal: "Bacia do Rio Nhamundá e Rio Mapuera",
       bioma: "Amazônia",
-      descricao_etnoambiental: "Sede de grandes aldeias históricas, com destaque para a Aldeia Polo Mapuera."
+      descricao_etnoambiental: "Sede de comunidades históricas Hixkaryana ao longo da calha do Rio Nhamundá."
     },
     "uaçá": {
       nome_oficial: "Terra Indígena Uaçá",
       superficie_ha: 470164,
       populacao_estimada: 6950,
-      etnia_nome: "Karipuna do Amapá, Galibi-Marworno, Palikur-Arukwayene",
+      etnia_nome: "Karipuna, Galibi-Marworno, Palikur-Arukwayene",
       familia_linguistica: "Kréyol Francês, Aruak (Palikur)",
       fase_ti: "Regularizada / Homologada",
       decreto_homologacao: "Decreto Presidencial nº 68.667 de 26/05/1971",
@@ -177,7 +182,7 @@ window.enhanceTerraIndigenaFeature = function(props) {
       uf_sigla: "AP",
       bacia_principal: "Bacia Hidrográfica do Rio Uaçá e Campos Inundáveis",
       bioma: "Amazônia Costeira e Manguezais",
-      descricao_etnoambiental: "Complexo socioambiental transfronteiriço do Oiapoque."
+      descricao_etnoambiental: "Complexo socioambiental transfronteiriço do Oiapoque abrigando três etnias."
     },
     "juminá": {
       nome_oficial: "Terra Indígena Juminá",
@@ -191,7 +196,7 @@ window.enhanceTerraIndigenaFeature = function(props) {
       uf_sigla: "AP",
       bacia_principal: "Bacia do Rio Oiapoque",
       bioma: "Amazônia",
-      descricao_etnoambiental: "Área tradicional dos povos indígenas do Amapá."
+      descricao_etnoambiental: "Área tradicional dos povos indígenas do norte do Amapá."
     },
     "galibi": {
       nome_oficial: "Terra Indígena Galibi",
@@ -205,7 +210,7 @@ window.enhanceTerraIndigenaFeature = function(props) {
       uf_sigla: "AP",
       bacia_principal: "Estuário do Rio Oiapoque",
       bioma: "Amazônia Costeira",
-      descricao_etnoambiental: "Território tradicional do povo Galibi (Kali'na)."
+      descricao_etnoambiental: "Território tradicional do povo Galibi (Kali'na) na foz do Oiapoque."
     }
   };
 
@@ -242,7 +247,7 @@ window.enhanceAldeiaFeature = function(props, coords) {
   p.rio_proximo = cleanAccents(p.rio_proximo || (lat > 2.0 ? "Rio Uaçá" : "Rio Mapuera"));
   p.populacao_estimada = p.populacao_estimada || 150;
   p.unidade_saude = cleanAccents(p.unidade_saude || "Atendimento Periódico EMSI (DSEI)");
-  p.descricao_detalhada = cleanAccents(p.descricao_detalhada || "Aldeia indígena integrante do território tradicional.");
+  p.descricao_detalhada = cleanAccents(p.descricao_detalhada || "Aldeia indígena atendida pelo Projeto Energia Limpa.");
 
   p.datum_oficial = "SIRGAS 2000 (EPSG: 4674)";
   if (lng !== null && lat !== null) {
@@ -264,8 +269,8 @@ window.enhanceMassaDaguaFeature = function(props) {
   const nomeRaw = cleanAccents(p.nmoriginal || "").trim();
 
   p.nome_formatado = nomeRaw ? nomeRaw : "Massa de Água / Curso Hídrico";
-  p.tipo_formatado = cleanAccents(p.detipomda || "Corpo d'Água Natural");
-  p.dominio_formatado = cleanAccents(p.dedominio || "Domínio Público / União");
+  p.tipo_formatado = cleanAccents(p.detipomda || "Curso d'Água Natural");
+  p.dominio_formatado = cleanAccents(p.dedominio || "Domínio Público Federal / Estadual");
   p.municipio_formatado = cleanAccents(p.nmmun || "Calha Norte / Oiapoque");
   p.uf_formatada = cleanAccents(p.nmufe || "PA / AM / AP");
 
@@ -273,7 +278,7 @@ window.enhanceMassaDaguaFeature = function(props) {
     const a = parseFloat(p.nuareakm2);
     p.area_km2_formatada = !isNaN(a) ? `${a.toFixed(2)} km²` : `${p.nuareakm2} km²`;
   } else {
-    p.area_km2_formatada = "Sob cálculo";
+    p.area_km2_formatada = "Sob medição";
   }
 
   if (p.nuperimkm) {
@@ -285,3 +290,5 @@ window.enhanceMassaDaguaFeature = function(props) {
   p.datum_oficial = "SIRGAS 2000 (EPSG: 4674)";
   return p;
 };
+
+window.ETNO_KNOWLEDGE_BASE = ETNO_KNOWLEDGE_BASE;

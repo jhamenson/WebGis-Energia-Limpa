@@ -1,28 +1,15 @@
 /**
- * Layer Catalog - PROJETO: ENERGIA LIMPA • ARQUEOLOGIA
- * High-performance rendering for 4 standardized SIRGAS 2000 layers:
- * 1. Sítios Arqueologicos (IPHAN 2.670 pontos)
- * 2. Terras Indígenas (6 TIs)
- * 3. Aldeias Indígenas (275 aldeias FUNAI)
- * 4. Massa de água (ANA geoft_bho_massa_dagua_v2019 - Região Norte, desativada por padrão)
+ * Layer Catalog - PROJETO: ENERGIA LIMPA
+ * High-performance rendering for 3 standardized SIRGAS 2000 project layers:
+ * 1. Terras Indígenas (6 TIs)
+ * 2. Aldeias Indígenas (15 aldeias FUNAI)
+ * 3. Massa de água (ANA geoft_bho_massa_dagua_v2019 - Região Norte)
  */
 
 class LayerCatalog {
   constructor(mapManager) {
     this.mapManager = mapManager;
     this.layers = {
-      sitiosArqueologicos: {
-        id: "sitiosArqueologicos",
-        name: "Sítios Arqueologicos (IPHAN)",
-        category: "arqueologia",
-        path: "data/sitios_arqueologicos.geojson",
-        color: "#ea580c",
-        visible: true,
-        opacity: 1.0,
-        geoJsonData: null,
-        leafletLayer: null,
-        count: 2670
-      },
       terrasIndigenas: {
         id: "terrasIndigenas",
         name: "Terras Indígenas",
@@ -40,9 +27,9 @@ class LayerCatalog {
       },
       aldeias: {
         id: "aldeias",
-        name: "Aldeias Indígenas",
+        name: "Aldeias Indígenas do Projeto",
         category: "indigena",
-        path: "data/pontos_aldeias.geojson",
+        path: "data/Pontos_aldeias.geojson",
         color: "#fbbf24",
         visible: true,
         opacity: 1.0,
@@ -52,13 +39,13 @@ class LayerCatalog {
       },
       massaDeAgua: {
         id: "massaDeAgua",
-        name: "Massa de água",
+        name: "Massa de água (ANA)",
         category: "hidrografia",
         path: "data/massa_de_agua.geojson",
         color: "#0ea5e9",
         weight: 1.2,
         fillOpacity: 0.4,
-        visible: false, // Desativada por padrão para não sobrecarregar a visualização
+        visible: false,
         opacity: 0.75,
         geoJsonData: null,
         leafletLayer: null,
@@ -70,45 +57,51 @@ class LayerCatalog {
   }
 
   async loadAllLayers() {
-    const promises = Object.values(this.layers).map(layerConfig => this.loadLayer(layerConfig));
-    await Promise.all(promises);
-    this.isLoaded = true;
+    this.renderCatalogTree(); // Render tree immediately so UI is never stuck
 
-    this.renderCatalogTree();
+    try {
+      const promises = Object.values(this.layers).map(layerConfig => this.loadLayer(layerConfig));
+      await Promise.all(promises);
+      this.isLoaded = true;
 
-    // Auto-fit map to study area
-    if (this.mapManager && this.mapManager.map1) {
-      this.mapManager.resetToStudyArea();
+      this.renderCatalogTree();
+
+      // Auto-fit map to study area
+      if (this.mapManager && this.mapManager.map1) {
+        this.mapManager.resetToStudyArea();
+      }
+
+      // Trigger updates for search, table, analytics
+      if (window.AttributeTable) {
+        window.AttributeTable.populateLayerSelect();
+        window.AttributeTable.renderTable();
+      }
+      if (window.AnalyticsPanel) window.AnalyticsPanel.init();
+      if (window.App) window.App.buildSearchIndex();
+    } catch (err) {
+      console.error("Erro ao carregar camadas:", err);
+      this.renderCatalogTree();
     }
-
-    // Trigger updates for search, table, analytics
-    if (window.AttributeTable) {
-      window.AttributeTable.populateLayerSelect();
-      window.AttributeTable.renderTable();
-    }
-    if (window.AnalyticsPanel) window.AnalyticsPanel.init();
-    if (window.App) window.App.buildSearchIndex();
   }
 
   async loadLayer(config) {
     try {
       let data = null;
 
-      // 1. Embedded data first
+      // 1. Embedded data first (works 100% offline & local file://)
       if (window.EMBEDDED_DATA && window.EMBEDDED_DATA[config.id]) {
         data = window.EMBEDDED_DATA[config.id];
       }
 
       // 2. Fetch fallback
-      if (!data) {
-        let response;
+      if (!data && typeof fetch === "function") {
         try {
-          response = await fetch(config.path);
+          const response = await fetch(config.path);
+          if (response && response.ok) {
+            data = await response.json();
+          }
         } catch (err) {
           console.warn("Fetch fallback:", err);
-        }
-        if (response && response.ok) {
-          data = await response.json();
         }
       }
 
@@ -126,11 +119,7 @@ class LayerCatalog {
           feat._id = `${config.id}_${idx}`;
           const coords = feat.geometry && feat.geometry.type === "Point" ? feat.geometry.coordinates : null;
 
-          if (config.id === "sitiosArqueologicos") {
-            if (window.enhanceSitioFeature) {
-              feat.properties = window.enhanceSitioFeature(feat.properties, coords);
-            }
-          } else if (config.id === "terrasIndigenas") {
+          if (config.id === "terrasIndigenas") {
             if (window.enhanceTerraIndigenaFeature) {
               feat.properties = window.enhanceTerraIndigenaFeature(feat.properties);
             }
@@ -146,61 +135,20 @@ class LayerCatalog {
         });
       }
 
-      // Create Leaflet Layer
-      config.leafletLayer = this.createLeafletLayer(config);
+      config.leafletLayer = this.createLayer(config);
 
-      if (config.visible && this.mapManager && this.mapManager.map1 && config.leafletLayer) {
-        config.leafletLayer.addTo(this.mapManager.map1);
+      if (config.visible && config.leafletLayer) {
+        this.mapManager.addLayer(config.leafletLayer);
       }
-    } catch (e) {
-      console.error(`Erro ao carregar camada ${config.name}:`, e);
+    } catch (err) {
+      console.error(`Erro ao carregar camada ${config.id}:`, err);
     }
   }
 
-  createLeafletLayer(config) {
-    // 1. Sítios Arqueológicos (High-Performance CircleMarkers)
-    if (config.id === "sitiosArqueologicos") {
-      return L.geoJSON(config.geoJsonData, {
-        pointToLayer: (feature, latlng) => {
-          const classif = (feature.properties.classificacao || "").toLowerCase();
-          let dotColor = "#ea580c";
-          if (classif.includes("histórico") || classif.includes("historico")) dotColor = "#d97706";
-          else if (classif.includes("contato")) dotColor = "#ca8a04";
+  createLayer(config) {
+    if (!config.geoJsonData) return null;
 
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: dotColor,
-            color: "#ffffff",
-            weight: 1.5,
-            opacity: 1.0,
-            fillOpacity: 0.85
-          });
-        },
-        onEachFeature: (feature, layer) => {
-          layer.bindPopup(this.createPopupContent(config.id, feature.properties));
-          layer.on("mouseover", () => {
-            const p = feature.properties;
-            layer.setRadius(8);
-            layer.setStyle({ fillColor: "#ffffff", color: "#ea580c", weight: 2.5 });
-            layer.bindTooltip(`
-              <strong>${p.nome_formatado || 'Sítio Arqueológico'}</strong><br>
-              <span style="color:#ea580c">${p.classificacao} • ${p.codigo_oficial}</span>
-            `, { sticky: true, direction: "top" }).openTooltip();
-          });
-          layer.on("mouseout", () => {
-            const classif = (feature.properties.classificacao || "").toLowerCase();
-            let dotColor = "#ea580c";
-            if (classif.includes("histórico") || classif.includes("historico")) dotColor = "#d97706";
-            else if (classif.includes("contato")) dotColor = "#ca8a04";
-
-            layer.setRadius(5);
-            layer.setStyle({ fillColor: dotColor, color: "#ffffff", weight: 1.5 });
-          });
-        }
-      });
-    }
-
-    // 2. Aldeias Indígenas (Official FUNAI Points)
+    // 1. Aldeias Indígenas (Official FUNAI Points)
     if (config.id === "aldeias") {
       return L.geoJSON(config.geoJsonData, {
         pointToLayer: (feature, latlng) => {
@@ -234,7 +182,7 @@ class LayerCatalog {
       });
     }
 
-    // 3. Terras Indígenas
+    // 2. Terras Indígenas
     if (config.id === "terrasIndigenas") {
       let currentLayerGroup = null;
       currentLayerGroup = L.geoJSON(config.geoJsonData, {
@@ -272,14 +220,14 @@ class LayerCatalog {
       return currentLayerGroup;
     }
 
-    // 4. Massa de Água (ANA BHO 2019 - Região Norte)
+    // 3. Massa de Água (ANA BHO 2019 - Região Norte)
     if (config.id === "massaDeAgua") {
       let currentLayerGroup = null;
       currentLayerGroup = L.geoJSON(config.geoJsonData, {
         style: () => ({
           color: "#0284c7",
           weight: 1.2,
-          opacity: 0.75,
+          opacity: 0.8,
           fillColor: "#0ea5e9",
           fillOpacity: 0.35
         }),
@@ -290,8 +238,8 @@ class LayerCatalog {
             const l = e.target;
             l.setStyle({
               weight: 2.5,
-              color: "#38bdf8",
-              fillOpacity: 0.65
+              fillOpacity: 0.65,
+              color: "#38bdf8"
             });
             l.bringToFront();
 
@@ -313,65 +261,6 @@ class LayerCatalog {
   }
 
   createPopupContent(layerId, p) {
-    // Sítio Arqueológico Popup
-    if (layerId === "sitiosArqueologicos") {
-      const nome = p.nome_formatado || "Sítio Arqueológico";
-      const cod = p.codigo_oficial || "IPHAN";
-      const classif = p.classificacao || "Pré-colonial";
-      const tipo = p.tipo || "Sítio Arqueológico";
-      const periodo = p.periodo_cronologico || "Pré-Cabralino";
-      const sintese = p.sintese_arqueologica || p.sintese_be || "Vestígio de ocupação humana ancestral catalogado pelo IPHAN.";
-      const latDeg = p.coord_lat_deg || "";
-      const longDeg = p.coord_long_deg || "";
-      const latDms = p.coord_lat_dms || "";
-      const longDms = p.coord_long_dms || "";
-      const utm = p.utm_sirgas || "SIRGAS 2000";
-
-      return `
-        <div class="popup-card">
-          <div class="popup-header sitio-header">
-            <div class="popup-category" style="color:#ea580c">
-              <i data-lucide="flame" style="width:13px;height:13px"></i>
-              SÍTIOS ARQUEOLÓGICOS (IPHAN) • ${classif.toUpperCase()}
-            </div>
-            <div class="popup-title">${nome}</div>
-          </div>
-          <div class="popup-body">
-            <div class="popup-desc">${sintese}</div>
-            <div class="popup-data-grid">
-              <div class="popup-data-cell">
-                <span class="popup-data-label">Código IPHAN</span>
-                <span class="popup-data-val" style="color:#ea580c;font-family:var(--font-mono)">${cod}</span>
-              </div>
-              <div class="popup-data-cell">
-                <span class="popup-data-label">Tipologia</span>
-                <span class="popup-data-val">${tipo}</span>
-              </div>
-              <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Horizonte Cronológico</span>
-                <span class="popup-data-val" style="color:#d97706">${periodo}</span>
-              </div>
-              <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Coordenadas (SIRGAS 2000)</span>
-                <span class="popup-data-val" style="font-family:var(--font-mono);font-size:0.72rem">
-                  Lat: ${latDeg} • Long: ${longDeg}<br>
-                  <span style="color:#a8a29e">${latDms} • ${longDms}</span>
-                </span>
-              </div>
-              <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Referência Geodésica</span>
-                <span class="popup-data-val" style="font-size:0.7rem;color:#10b981">${utm}</span>
-              </div>
-            </div>
-          </div>
-          <div class="popup-footer">
-            <span class="badge badge-terracotta"><i data-lucide="shield" style="width:12px;height:12px"></i> IPHAN / SICG</span>
-            <button class="popup-btn" onclick="window.App.zoomToCurrentFeature()"><i data-lucide="maximize-2" style="width:12px;height:12px"></i> Centralizar</button>
-          </div>
-        </div>
-      `;
-    }
-
     // Terras Indígenas Popup
     if (layerId === "terrasIndigenas") {
       const nome = p.nome_oficial || p.terrai_nom || "Terra Indígena";
@@ -444,19 +333,22 @@ class LayerCatalog {
       const rio = p.rio_proximo || "Rio de Acesso Local";
       const mun = p.nommunic || "Oriximiná";
       const uf = p.nomuf || "Pará";
-      const pop = p.populacao_estimada ? `${p.populacao_estimada} hab.` : "Comunidade tradicional";
-      const isPolo = p.e_polo_base ? "POLO DE ATENDIMENTO BASE" : "ALDEIA TRADICIONAL";
-      const saude = p.unidade_saude || "Atendimento Periódico EMSI";
-      const desc = p.descricao_detalhada || "Aldeia integrante do território tradicional indígena.";
-      const latDeg = p.coord_lat_deg || (p.coord_lat ? `${Number(p.coord_lat).toFixed(5)}°` : "");
-      const longDeg = p.coord_long_deg || (p.coord_long ? `${Number(p.coord_long).toFixed(5)}°` : "");
+      const pop = p.populacao_estimada ? `${p.populacao_estimada} habitantes` : "Comunidade tradicional";
+      const saude = p.unidade_saude || "Atendimento DSEI";
+      const desc = p.descricao_detalhada || "Aldeia atendida pelo Projeto Energia Limpa.";
+      const latDeg = p.coord_lat_deg || "";
+      const longDeg = p.coord_long_deg || "";
+      const latDms = p.coord_lat_dms || "";
+      const longDms = p.coord_long_dms || "";
+      const utm = p.utm_sirgas || "SIRGAS 2000";
+      const isPolo = p.e_polo_base;
 
       return `
         <div class="popup-card">
-          <div class="popup-header">
-            <div class="popup-category" style="color:#f59e0b">
-              <i data-lucide="${p.e_polo_base ? 'landmark' : 'home'}" style="width:12px;height:12px"></i>
-              ${isPolo}
+          <div class="popup-header aldeia-header">
+            <div class="popup-category" style="color:#fbbf24">
+              <i data-lucide="${isPolo ? 'landmark' : 'home'}" style="width:12px;height:12px"></i>
+              ALDEIA INDÍGENA ${isPolo ? '• POLO BASE' : ''}
             </div>
             <div class="popup-title">${nome}</div>
           </div>
@@ -464,39 +356,44 @@ class LayerCatalog {
             <div class="popup-desc">${desc}</div>
             <div class="popup-data-grid">
               <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Terra Indígena / Região</span>
+                <span class="popup-data-label">Terra Indígena</span>
                 <span class="popup-data-val" style="color:#10b981">${ti}</span>
               </div>
               <div class="popup-data-cell">
-                <span class="popup-data-label">Etnia Predominante</span>
+                <span class="popup-data-label">Etnia / Povo</span>
                 <span class="popup-data-val" style="color:#fbbf24">${etnia}</span>
               </div>
               <div class="popup-data-cell">
-                <span class="popup-data-label">População Estimada</span>
+                <span class="popup-data-label">População</span>
                 <span class="popup-data-val">${pop}</span>
               </div>
-              <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Rio / Eixo de Acesso</span>
-                <span class="popup-data-val" style="color:#0ea5e9"><i data-lucide="waves" style="width:12px;height:12px"></i> ${rio}</span>
+              <div class="popup-data-cell">
+                <span class="popup-data-label">Curso Hídrico Principal</span>
+                <span class="popup-data-val" style="color:#0ea5e9">${rio}</span>
+              </div>
+              <div class="popup-data-cell">
+                <span class="popup-data-label">Município / UF</span>
+                <span class="popup-data-val">${mun} - ${uf}</span>
               </div>
               <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Coordenadas (SIRGAS 2000)</span>
+                <span class="popup-data-label">Atenção à Saúde Indígena</span>
+                <span class="popup-data-val" style="color:#f59e0b">${saude}</span>
+              </div>
+              <div class="popup-data-cell full-width">
+                <span class="popup-data-label">Coordenadas Oficiais (SIRGAS 2000)</span>
                 <span class="popup-data-val" style="font-family:var(--font-mono);font-size:0.72rem">
-                  Lat: ${latDeg} • Long: ${longDeg}
+                  Lat: ${latDeg} • Long: ${longDeg}<br>
+                  <span style="color:#a8a29e">${latDms} • ${longDms}</span>
                 </span>
               </div>
-              <div class="popup-data-cell">
-                <span class="popup-data-label">Município e UF</span>
-                <span class="popup-data-val">${mun} – ${uf}</span>
-              </div>
-              <div class="popup-data-cell">
-                <span class="popup-data-label">Saúde (DSEI)</span>
-                <span class="popup-data-val" style="font-size:0.7rem">${saude}</span>
+              <div class="popup-data-cell full-width">
+                <span class="popup-data-label">Referência Geodésica</span>
+                <span class="popup-data-val" style="font-size:0.7rem;color:#10b981">${utm}</span>
               </div>
             </div>
           </div>
           <div class="popup-footer">
-            <span class="badge badge-amber"><i data-lucide="map-pin" style="width:12px;height:12px"></i> FUNAI • SIRGAS 2000</span>
+            <span class="badge badge-amber"><i data-lucide="sun" style="width:12px;height:12px"></i> Projeto Energia Limpa</span>
             <button class="popup-btn" onclick="window.App.zoomToCurrentFeature()"><i data-lucide="maximize-2" style="width:12px;height:12px"></i> Centralizar</button>
           </div>
         </div>
@@ -505,211 +402,173 @@ class LayerCatalog {
 
     // Massa de Água Popup
     if (layerId === "massaDeAgua") {
-      const nome = p.nome_formatado || p.nmoriginal || "Massa de Água";
-      const tipo = p.tipo_formatado || p.detipomda || "Corpo d'Água";
-      const mun = p.municipio_formatado || p.nmmun || "Região Norte";
-      const uf = p.uf_formatada || p.nmufe || "PA / AM / AP";
-      const area = p.area_km2_formatada || (p.nuareakm2 ? `${Number(p.nuareakm2).toFixed(2)} km²` : "N/D");
-      const perim = p.perimetro_km_formatado || (p.nuperimkm ? `${Number(p.nuperimkm).toFixed(2)} km` : "N/D");
-      const dominio = p.dominio_formatado || p.dedominio || "Domínio Público";
+      const nome = p.nome_formatado || "Corpo Hídrico";
+      const tipo = p.tipo_formatado || "Curso d'Água";
+      const dominio = p.dominio_formatado || "Domínio Público";
+      const mun = p.municipio_formatado || "Norte do Brasil";
+      const uf = p.uf_formatada || "PA / AM / AP";
+      const area = p.area_km2_formatada || "-";
+      const perim = p.perimetro_km_formatado || "-";
 
       return `
         <div class="popup-card">
-          <div class="popup-header rio-header">
+          <div class="popup-header hydro-header">
             <div class="popup-category" style="color:#0ea5e9">
-              <i data-lucide="waves" style="width:12px;height:12px"></i>
-              MASSA DE ÁGUA • ${tipo.toUpperCase()}
+              <i data-lucide="droplets" style="width:12px;height:12px"></i>
+              RECURSO HÍDRICO • ANA (BHO)
             </div>
             <div class="popup-title">${nome}</div>
           </div>
           <div class="popup-body">
-            <div class="popup-desc">Massa de água da Região Norte catalogada pela Agência Nacional de Águas (Base Hidrográfica Ottocodificada - BHO).</div>
             <div class="popup-data-grid">
-              <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Tipologia Hídrica</span>
-                <span class="popup-data-val" style="color:#0ea5e9">${tipo}</span>
+              <div class="popup-data-cell">
+                <span class="popup-data-label">Tipologia</span>
+                <span class="popup-data-val">${tipo}</span>
+              </div>
+              <div class="popup-data-cell">
+                <span class="popup-data-label">Domínio</span>
+                <span class="popup-data-val">${dominio}</span>
               </div>
               <div class="popup-data-cell">
                 <span class="popup-data-label">Área Superficial</span>
-                <span class="popup-data-val">${area}</span>
+                <span class="popup-data-val" style="color:#0ea5e9">${area}</span>
               </div>
               <div class="popup-data-cell">
                 <span class="popup-data-label">Perímetro</span>
                 <span class="popup-data-val">${perim}</span>
               </div>
-              <div class="popup-data-cell">
-                <span class="popup-data-label">Município / UF</span>
+              <div class="popup-data-cell full-width">
+                <span class="popup-data-label">Localização</span>
                 <span class="popup-data-val">${mun} (${uf})</span>
               </div>
-              <div class="popup-data-cell">
-                <span class="popup-data-label">Datum</span>
-                <span class="popup-data-val" style="color:#ea580c">SIRGAS 2000</span>
-              </div>
               <div class="popup-data-cell full-width">
-                <span class="popup-data-label">Domínio</span>
-                <span class="popup-data-val" style="font-size:0.75rem">${dominio}</span>
+                <span class="popup-data-label">Base Cartográfica</span>
+                <span class="popup-data-val" style="font-size:0.7rem;color:#10b981">Agência Nacional de Águas • SIRGAS 2000</span>
               </div>
             </div>
           </div>
           <div class="popup-footer">
-            <span class="badge badge-cyan"><i data-lucide="droplet" style="width:12px;height:12px"></i> ANA • Região Norte</span>
+            <span class="badge badge-blue"><i data-lucide="waves" style="width:12px;height:12px"></i> BHO 2019</span>
             <button class="popup-btn" onclick="window.App.zoomToCurrentFeature()"><i data-lucide="maximize-2" style="width:12px;height:12px"></i> Centralizar</button>
           </div>
         </div>
       `;
     }
 
-    return `<div>${JSON.stringify(p)}</div>`;
+    return `<div>Sem detalhes adicionais.</div>`;
   }
 
   renderCatalogTree() {
     const container = document.getElementById("layer-catalog-tree");
     if (!container) return;
 
+    const groups = [
+      {
+        name: "Territórios tradicionais e aldeias do projeto",
+        icon: "shield",
+        layers: ["terrasIndigenas", "aldeias"]
+      },
+      {
+        name: "Recursos Hídricos da Região Norte",
+        icon: "waves",
+        layers: ["massaDeAgua"]
+      }
+    ];
+
     let html = "";
+    groups.forEach(g => {
+      html += `
+        <div class="layer-catalog-group">
+          <div class="layer-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+            <div class="layer-group-title">
+              <i data-lucide="${g.icon}" style="width:14px;height:14px;color:#ea580c"></i>
+              ${g.name}
+            </div>
+            <i data-lucide="chevron-down" class="layer-group-collapse-icon"></i>
+          </div>
+          <div class="layer-group-items">
+      `;
 
-    // 1. Sítios Arqueológicos (IPHAN)
-    html += `
-      <div class="layer-catalog-group" id="group-arqueologia">
-        <div class="layer-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
-          <span class="layer-group-title" style="color:#f97316">
-            <i data-lucide="flame"></i> Sítios Arqueologicos (IPHAN)
-          </span>
-          <i data-lucide="chevron-down" class="layer-group-collapse-icon"></i>
-        </div>
-        <div class="layer-group-items">
-          ${this.renderLayerCard(this.layers.sitiosArqueologicos)}
-        </div>
-      </div>
-    `;
+      g.layers.forEach(layerId => {
+        const layer = this.layers[layerId];
+        if (!layer) return;
 
-    // 2. Territorios tradicionais e aldeias do projeto
-    html += `
-      <div class="layer-catalog-group" id="group-indigena">
-        <div class="layer-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
-          <span class="layer-group-title">
-            <i data-lucide="shield-check"></i> Territorios tradicionais e aldeias do projeto
-          </span>
-          <i data-lucide="chevron-down" class="layer-group-collapse-icon"></i>
-        </div>
-        <div class="layer-group-items">
-          ${this.renderLayerCard(this.layers.terrasIndigenas)}
-          ${this.renderLayerCard(this.layers.aldeias)}
-        </div>
-      </div>
-    `;
+        html += `
+          <div class="layer-item-card" data-layer-id="${layer.id}">
+            <div class="layer-card-top">
+              <label class="layer-check-label" for="chk-${layer.id}">
+                <input type="checkbox" id="chk-${layer.id}" class="layer-checkbox" ${layer.visible ? 'checked' : ''} onchange="window.LayerCatalog.toggleLayer('${layer.id}', this.checked)">
+                <span class="layer-legend-swatch" style="background:${layer.color}"></span>
+                <span class="layer-title-text">${layer.name}</span>
+                <span class="layer-badge-count">${layer.count || 0}</span>
+              </label>
+              <div class="layer-card-actions">
+                <button class="layer-mini-btn" title="Centralizar camada no mapa" onclick="window.LayerCatalog.zoomToLayer('${layer.id}')">
+                  <i data-lucide="maximize-2" style="width:13px;height:13px"></i>
+                </button>
+                <button class="layer-mini-btn" title="Abrir Tabela de Atributos" onclick="window.AttributeTable.openLayerTable('${layer.id}')">
+                  <i data-lucide="table-2" style="width:13px;height:13px"></i>
+                </button>
+              </div>
+            </div>
+            <div class="layer-controls-row">
+              <div class="layer-slider-wrapper">
+                <span class="layer-slider-label">Opacidade</span>
+                <input type="range" min="0" max="1" step="0.05" value="${layer.opacity}" class="layer-opacity-slider" oninput="window.LayerCatalog.setOpacity('${layer.id}', this.value)">
+              </div>
+            </div>
+          </div>
+        `;
+      });
 
-    // 3. Recursos Hídricos da Região Norte
-    html += `
-      <div class="layer-catalog-group" id="group-hidrografia">
-        <div class="layer-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
-          <span class="layer-group-title">
-            <i data-lucide="waves"></i> Recursos Hídricos da Região Norte
-          </span>
-          <i data-lucide="chevron-down" class="layer-group-collapse-icon"></i>
-        </div>
-        <div class="layer-group-items">
-          ${this.renderLayerCard(this.layers.massaDeAgua)}
-        </div>
-      </div>
-    `;
+      html += `</div></div>`;
+    });
 
     container.innerHTML = html;
-    if (window.lucide) {
-      try { window.lucide.createIcons(); } catch(e) {}
-    }
-
-    this.attachCatalogEventListeners();
+    if (window.lucide) window.lucide.createIcons();
   }
 
-  renderLayerCard(layer) {
-    return `
-      <div class="layer-item-card" data-layer-id="${layer.id}">
-        <div class="layer-card-top">
-          <label class="layer-check-label">
-            <input type="checkbox" class="layer-toggle-check" data-layer="${layer.id}" ${layer.visible ? 'checked' : ''}>
-            <span class="layer-legend-swatch" style="background-color:${layer.color}"></span>
-            <span>${layer.name}</span>
-          </label>
-          <div class="layer-card-actions">
-            <span class="count-badge">${layer.count}</span>
-            <button class="layer-mini-btn" title="Zoom para a camada" onclick="window.LayerCatalog.zoomToLayer('${layer.id}')">
-              <i data-lucide="maximize" style="width:13px;height:13px"></i>
-            </button>
-            <button class="layer-mini-btn" title="Abrir tabela de atributos" onclick="window.AttributeTable.openLayerTable('${layer.id}')">
-              <i data-lucide="table" style="width:13px;height:13px"></i>
-            </button>
-          </div>
-        </div>
+  toggleLayer(layerId, isVisible) {
+    const layer = this.layers[layerId];
+    if (!layer) return;
 
-        <div class="layer-controls-row">
-          <div class="layer-slider-wrapper">
-            <span>Opacidade</span>
-            <input type="range" class="layer-opacity-slider" min="0" max="1" step="0.05" value="${layer.opacity}" data-layer="${layer.id}">
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  attachCatalogEventListeners() {
-    document.querySelectorAll(".layer-toggle-check").forEach(chk => {
-      chk.addEventListener("change", e => {
-        const id = e.target.dataset.layer;
-        this.toggleLayerVisibility(id, e.target.checked);
-      });
-    });
-
-    document.querySelectorAll(".layer-opacity-slider").forEach(sld => {
-      sld.addEventListener("input", e => {
-        const id = e.target.dataset.layer;
-        const val = parseFloat(e.target.value);
-        this.setLayerOpacity(id, val);
-      });
-    });
-  }
-
-  toggleLayerVisibility(layerId, isVisible) {
-    const config = this.layers[layerId];
-    if (!config) return;
-
-    config.visible = isVisible;
-    if (this.mapManager && this.mapManager.map1 && config.leafletLayer) {
-      if (isVisible) config.leafletLayer.addTo(this.mapManager.map1);
-      else this.mapManager.map1.removeLayer(config.leafletLayer);
-    }
-
-    if (window.App && window.App.showToast) {
-      window.App.showToast(`${config.name}: ${isVisible ? 'Visível' : 'Oculta'}`);
-    }
-  }
-
-  setLayerOpacity(layerId, opacity) {
-    const config = this.layers[layerId];
-    if (!config) return;
-    config.opacity = opacity;
-
-    if (config.leafletLayer) {
-      if (config.leafletLayer.eachLayer) {
-        config.leafletLayer.eachLayer(l => {
-          if (l.setOpacity) l.setOpacity(opacity);
-          if (l.setStyle) {
-            l.setStyle({
-              opacity: opacity,
-              fillOpacity: (config.fillOpacity || 0.45) * opacity
-            });
-          }
-        });
+    layer.visible = isVisible;
+    if (layer.leafletLayer) {
+      if (isVisible) {
+        this.mapManager.addLayer(layer.leafletLayer);
+      } else {
+        this.mapManager.removeLayer(layer.leafletLayer);
       }
     }
   }
 
+  setOpacity(layerId, opacityVal) {
+    const layer = this.layers[layerId];
+    if (!layer || !layer.leafletLayer) return;
+
+    layer.opacity = parseFloat(opacityVal);
+    if (typeof layer.leafletLayer.setStyle === "function") {
+      layer.leafletLayer.setStyle({
+        opacity: layer.opacity,
+        fillOpacity: layer.opacity * 0.35
+      });
+    } else if (typeof layer.leafletLayer.eachLayer === "function") {
+      layer.leafletLayer.eachLayer(l => {
+        if (typeof l.setOpacity === "function") l.setOpacity(layer.opacity);
+        if (typeof l.setStyle === "function") l.setStyle({ opacity: layer.opacity });
+      });
+    }
+  }
+
   zoomToLayer(layerId) {
-    const config = this.layers[layerId];
-    if (!config || !config.leafletLayer) return;
-    const b = config.leafletLayer.getBounds();
-    if (b && b.isValid()) {
-      this.mapManager.fitBounds(b);
+    const layer = this.layers[layerId];
+    if (!layer || !layer.leafletLayer) return;
+
+    if (typeof layer.leafletLayer.getBounds === "function") {
+      const bounds = layer.leafletLayer.getBounds();
+      if (bounds && bounds.isValid()) {
+        this.mapManager.fitBounds(bounds);
+      }
     }
   }
 }

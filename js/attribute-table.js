@@ -1,7 +1,7 @@
 /**
- * Attribute Table Drawer - PROJETO: ENERGIA LIMPA • ARQUEOLOGIA
- * Interactive tabular data viewer with search, sorting, pagination,
- * direct map zooming, and CSV export for archaeological sites, indigenous lands, and Massa de Água (ANA).
+ * Attribute Table Modal / Pop-up - PROJETO: ENERGIA LIMPA
+ * Interactive tabular data viewer in a responsive centered modal
+ * with search, sorting, pagination, direct map zooming, and CSV export.
  */
 
 class AttributeTable {
@@ -9,7 +9,7 @@ class AttributeTable {
     this.layerCatalog = layerCatalog;
     this.mapManager = mapManager;
     this.isOpen = false;
-    this.currentLayerId = "sitiosArqueologicos";
+    this.currentLayerId = "aldeias";
     this.searchQuery = "";
     this.sortColumn = null;
     this.sortAsc = true;
@@ -24,7 +24,8 @@ class AttributeTable {
 
   setupUI() {
     const toggleBtn = document.getElementById("btn-toggle-table");
-    const closeBtn = document.getElementById("btn-close-table");
+    const closeBtn = document.getElementById("btn-close-table-modal");
+    const modalBackdrop = document.getElementById("attribute-table-modal-backdrop");
     const layerSelect = document.getElementById("attr-layer-select");
     const searchInput = document.getElementById("attr-search-input");
     const exportCsvBtn = document.getElementById("btn-export-csv");
@@ -40,6 +41,14 @@ class AttributeTable {
       closeBtn.onclick = (e) => {
         e.preventDefault();
         this.close();
+      };
+    }
+
+    if (modalBackdrop) {
+      modalBackdrop.onclick = (e) => {
+        if (e.target === modalBackdrop) {
+          this.close();
+        }
       };
     }
 
@@ -65,6 +74,13 @@ class AttributeTable {
         this.exportCurrentTableToCSV();
       };
     }
+
+    // Keyboard ESC to close
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && this.isOpen) {
+        this.close();
+      }
+    });
   }
 
   populateLayerSelect() {
@@ -73,10 +89,9 @@ class AttributeTable {
 
     const layers = this.layerCatalog.layers;
     layerSelect.innerHTML = `
-      <option value="sitiosArqueologicos" ${this.currentLayerId === 'sitiosArqueologicos' ? 'selected' : ''}>Sítios Arqueologicos (IPHAN) (${layers.sitiosArqueologicos ? layers.sitiosArqueologicos.count : 0})</option>
-      <option value="terrasIndigenas" ${this.currentLayerId === 'terrasIndigenas' ? 'selected' : ''}>Terras Indígenas (${layers.terrasIndigenas ? layers.terrasIndigenas.count : 0})</option>
-      <option value="aldeias" ${this.currentLayerId === 'aldeias' ? 'selected' : ''}>Aldeias Indígenas (${layers.aldeias ? layers.aldeias.count : 0})</option>
-      <option value="massaDeAgua" ${this.currentLayerId === 'massaDeAgua' ? 'selected' : ''}>Massa de água - Região Norte (${layers.massaDeAgua ? layers.massaDeAgua.count : 0})</option>
+      <option value="aldeias" ${this.currentLayerId === 'aldeias' ? 'selected' : ''}>Aldeias Indígenas (${layers.aldeias ? layers.aldeias.count : 15})</option>
+      <option value="terrasIndigenas" ${this.currentLayerId === 'terrasIndigenas' ? 'selected' : ''}>Terras Indígenas (${layers.terrasIndigenas ? layers.terrasIndigenas.count : 6})</option>
+      <option value="massaDeAgua" ${this.currentLayerId === 'massaDeAgua' ? 'selected' : ''}>Massa de água - Região Norte (${layers.massaDeAgua ? layers.massaDeAgua.count : 46})</option>
     `;
   }
 
@@ -90,8 +105,8 @@ class AttributeTable {
 
   open() {
     this.isOpen = true;
-    const drawer = document.getElementById("attribute-table-drawer");
-    if (drawer) drawer.classList.add("open");
+    const modal = document.getElementById("attribute-table-modal-backdrop");
+    if (modal) modal.classList.add("active");
     const btn = document.getElementById("btn-toggle-table");
     if (btn) btn.classList.add("active");
     this.renderTable();
@@ -99,8 +114,8 @@ class AttributeTable {
 
   close() {
     this.isOpen = false;
-    const drawer = document.getElementById("attribute-table-drawer");
-    if (drawer) drawer.classList.remove("open");
+    const modal = document.getElementById("attribute-table-modal-backdrop");
+    if (modal) modal.classList.remove("active");
     const btn = document.getElementById("btn-toggle-table");
     if (btn) btn.classList.remove("active");
   }
@@ -117,7 +132,7 @@ class AttributeTable {
 
     const layerConfig = this.layerCatalog.layers[this.currentLayerId];
     if (!layerConfig || !layerConfig.geoJsonData || !layerConfig.geoJsonData.features || layerConfig.geoJsonData.features.length === 0) {
-      container.innerHTML = `<div style="padding:2rem;text-align:center;color:#a8a29e">Camada sem dados vetoriais carregados.</div>`;
+      container.innerHTML = `<div style="padding:2rem;text-align:center;color:#a8a29e">Camada sem dados carregados.</div>`;
       if (countSpan) countSpan.textContent = `0 registros`;
       return;
     }
@@ -151,15 +166,15 @@ class AttributeTable {
       });
     }
 
-    const displayFeatures = this.filteredFeatures.slice(0, 250);
+    const displayFeatures = this.filteredFeatures.slice(0, 150);
 
     let html = `
       <table class="data-table">
         <thead>
           <tr>
-            <th style="width:40px">#</th>
+            <th style="width:35px">#</th>
             ${columns.map(c => `<th onclick="window.AttributeTable.sortBy('${c.key}')">${c.label} ${this.sortColumn === c.key ? (this.sortAsc ? '▲' : '▼') : ''}</th>`).join("")}
-            <th style="width:70px">Ações</th>
+            <th style="width:65px">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -180,24 +195,26 @@ class AttributeTable {
     });
 
     html += `</tbody></table>`;
-    if (this.filteredFeatures.length > 250) {
-      html += `<div style="padding:0.75rem;text-align:center;font-size:0.75rem;color:#d97706;background:#1a1715">Mostrando os primeiros 250 registros de ${this.filteredFeatures.length}. Utilize o campo de busca acima para refinar.</div>`;
+    if (this.filteredFeatures.length > 150) {
+      html += `<div style="padding:0.75rem;text-align:center;font-size:0.75rem;color:#d97706;background:#1a1715">Mostrando os primeiros 150 registros. Utilize o campo de busca acima para filtrar.</div>`;
     }
 
     container.innerHTML = html;
   }
 
   getColumnsForLayer(layerId) {
-    if (layerId === "sitiosArqueologicos") {
+    if (layerId === "aldeias") {
       return [
-        { key: "nome_formatado", label: "Nome do Sítio Arqueológico" },
-        { key: "codigo_oficial", label: "Código IPHAN" },
-        { key: "classificacao", label: "Classificação" },
-        { key: "tipo", label: "Tipo de Vestígio" },
-        { key: "periodo_cronologico", label: "Período Cronológico" },
+        { key: "nome_aldei", label: "Aldeia Indígena" },
+        { key: "terra_indigena", label: "Terra Indígena" },
+        { key: "etnia_predominante", label: "Etnia Predominante" },
+        { key: "rio_proximo", label: "Rio Principal" },
+        { key: "nommunic", label: "Município" },
+        { key: "nomuf", label: "UF" },
+        { key: "populacao_estimada", label: "População" },
         { key: "coord_lat_deg", label: "Latitude" },
         { key: "coord_long_deg", label: "Longitude" },
-        { key: "utm_sirgas", label: "Fuso UTM" }
+        { key: "datum_oficial", label: "Datum" }
       ];
     }
     if (layerId === "terrasIndigenas") {
@@ -212,22 +229,9 @@ class AttributeTable {
         { key: "datum_oficial", label: "Datum" }
       ];
     }
-    if (layerId === "aldeias") {
-      return [
-        { key: "nome_aldei", label: "Aldeia Indígena" },
-        { key: "terra_indigena", label: "Terra Indígena / Região" },
-        { key: "etnia_predominante", label: "Etnia" },
-        { key: "rio_proximo", label: "Rio de Acesso" },
-        { key: "nommunic", label: "Município" },
-        { key: "nomuf", label: "UF" },
-        { key: "coord_lat_deg", label: "Latitude" },
-        { key: "coord_long_deg", label: "Longitude" },
-        { key: "datum_oficial", label: "Datum" }
-      ];
-    }
     if (layerId === "massaDeAgua") {
       return [
-        { key: "nome_formatado", label: "Nome / Massa de Água" },
+        { key: "nome_formatado", label: "Nome / Rio" },
         { key: "tipo_formatado", label: "Tipologia" },
         { key: "municipio_formatado", label: "Município" },
         { key: "uf_formatada", label: "UF" },
@@ -265,6 +269,8 @@ class AttributeTable {
     const feat = this.filteredFeatures[featureIndex];
     if (!feat) return;
 
+    this.close(); // Close modal on zoom for better mobile/desktop view
+
     if (feat.geometry.type === "Point") {
       const coords = feat.geometry.coordinates;
       this.mapManager.map1.setView([coords[1], coords[0]], 13, { animate: true });
@@ -277,8 +283,8 @@ class AttributeTable {
     }
 
     if (window.App && window.App.showToast) {
-      const label = feat.properties.nome_formatado || feat.properties.nome_aldei || feat.properties.terrai_nom || "Massa de Água";
-      window.App.showToast(`Localizado em SIRGAS 2000: ${label}`);
+      const label = feat.properties.nome_formatado || feat.properties.nome_aldei || feat.properties.terrai_nom || "Feição";
+      window.App.showToast(`Localizado: ${label}`);
     }
   }
 
@@ -308,7 +314,7 @@ class AttributeTable {
     document.body.removeChild(link);
 
     if (window.App && window.App.showToast) {
-      window.App.showToast("Tabela em SIRGAS 2000 exportada em CSV com sucesso!");
+      window.App.showToast("Tabela exportada em CSV com sucesso!");
     }
   }
 }

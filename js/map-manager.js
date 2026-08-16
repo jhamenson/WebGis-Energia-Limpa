@@ -1,13 +1,14 @@
 /**
- * Map Manager - PROJETO: ENERGIA LIMPA • ARQUEOLOGIA
- * Single high-performance map, millimeter-accurate SIRGAS 2000 (EPSG:4674) UTM converter,
- * GPS user location, and automatic framing for Calha Norte & Oiapoque.
+ * Map Manager - PROJETO: ENERGIA LIMPA
+ * High-performance map with Google Maps High-Res Satellite/Hybrid tiles,
+ * collapsible coordinates toggle button, SIRGAS 2000 (EPSG:4674) UTM converter,
+ * GPS location, and automatic framing for Calha Norte & Oiapoque.
  */
 
 class MapManager {
   constructor() {
     this.map1 = null;
-    this.activeBasemap = "dark";
+    this.activeBasemap = "googleHybrid"; // Default high-res Google Satellite + Labels
     this.basemaps1 = {};
     this.userLocationMarker = null;
 
@@ -29,6 +30,14 @@ class MapManager {
 
   getBasemapLayers() {
     return {
+      googleHybrid: L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+        attribution: '&copy; Google Maps',
+        maxZoom: 20
+      }),
+      googleSat: L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+        attribution: '&copy; Google Maps',
+        maxZoom: 20
+      }),
       dark: L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         attribution: '&copy; <a href="https://carto.com/">CARTO</a>, &copy; OpenStreetMap',
         maxZoom: 19,
@@ -50,12 +59,11 @@ class MapManager {
   }
 
   initMap() {
-    // Restrict panning within South America / Amazon basin to avoid infinite world wrap
     this.map1 = L.map("map1", {
       center: this.defaultCenter,
       zoom: this.defaultZoom,
       minZoom: 4,
-      maxZoom: 18,
+      maxZoom: 20,
       maxBounds: [
         [-25.0, -90.0],
         [25.0, -30.0]
@@ -71,13 +79,39 @@ class MapManager {
   }
 
   setupBasemapSwitcher() {
-    document.querySelectorAll(".basemap-option-btn").forEach(btn => {
+    const toggleBtn = document.getElementById("btn-basemap-toggle");
+    const menu = document.getElementById("basemap-dropdown-menu");
+
+    if (toggleBtn && menu) {
+      toggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menu.classList.toggle("open");
+        toggleBtn.classList.toggle("active");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!menu.contains(e.target) && e.target !== toggleBtn) {
+          menu.classList.remove("open");
+          toggleBtn.classList.remove("active");
+        }
+      });
+    }
+
+    document.querySelectorAll(".basemap-menu-item").forEach(btn => {
       btn.addEventListener("click", () => {
         const type = btn.dataset.basemap;
         this.setBasemap(type);
 
-        document.querySelectorAll(".basemap-option-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".basemap-menu-item").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
+
+        const labelSpan = document.getElementById("active-basemap-label");
+        if (labelSpan) {
+          labelSpan.textContent = btn.querySelector("span") ? btn.querySelector("span").textContent : type;
+        }
+
+        if (menu) menu.classList.remove("open");
+        if (toggleBtn) toggleBtn.classList.remove("active");
       });
     });
   }
@@ -115,7 +149,7 @@ class MapManager {
     if (this.map1) {
       this.map1.fitBounds(this.studyAreaBounds, { padding: [30, 30], animate: true });
       if (window.App && window.App.showToast) {
-        window.App.showToast("Câmera centralizada na Área de Estudo Arqueológica.");
+        window.App.showToast("Câmera centralizada na Área do Projeto.");
       }
     }
   }
@@ -178,24 +212,20 @@ class MapManager {
 
   /**
    * High-precision Transverse Mercator (UTM) conversion for SIRGAS 2000 / GRS80
-   * Calculates exact Zone, Hemisphere, Easting (m) and Northing (m).
    */
   calcSIRGAS2000UTM(latDeg, lngDeg) {
-    // Normalize longitude between -180 and +180
     let lng = ((lngDeg + 180) % 360 + 360) % 360 - 180;
     let lat = latDeg;
 
-    // GRS 80 / SIRGAS 2000 Ellipsoid constants
-    const a = 6378137.0; // semi-major axis
-    const f = 1 / 298.257222101; // flattening
+    const a = 6378137.0;
+    const f = 1 / 298.257222101;
     const b = a * (1 - f);
-    const e2 = (a * a - b * b) / (a * a); // 0.00669438002290
+    const e2 = (a * a - b * b) / (a * a);
     const ePrime2 = (a * a - b * b) / (b * b);
-    const k0 = 0.9996; // scale factor
+    const k0 = 0.9996;
 
-    // UTM Zone
     const zone = Math.floor((lng + 180) / 6) + 1;
-    const lambda0Deg = (zone - 1) * 6 - 180 + 3; // central meridian
+    const lambda0Deg = (zone - 1) * 6 - 180 + 3;
     const lambda0 = (lambda0Deg * Math.PI) / 180;
 
     const phi = (lat * Math.PI) / 180;
@@ -206,7 +236,6 @@ class MapManager {
     const C = ePrime2 * Math.cos(phi) * Math.cos(phi);
     const A = Math.cos(phi) * (lambda - lambda0);
 
-    // Meridian distance M
     const M = a * (
       (1 - e2 / 4 - 3 * e2 * e2 / 64 - 5 * e2 * e2 * e2 / 256) * phi -
       (3 * e2 / 8 + 3 * e2 * e2 / 32 + 45 * e2 * e2 * e2 / 1024) * Math.sin(2 * phi) +
@@ -214,14 +243,12 @@ class MapManager {
       (35 * e2 * e2 * e2 / 3072) * Math.sin(6 * phi)
     );
 
-    // Easting (X)
     let easting = k0 * N * (
       A +
       (1 - T + C) * Math.pow(A, 3) / 6 +
       (5 - 18 * T + T * T + 72 * C - 58 * ePrime2) * Math.pow(A, 5) / 120
     ) + 500000;
 
-    // Northing (Y)
     let northing = k0 * (
       M +
       N * Math.tan(phi) * (
@@ -231,7 +258,6 @@ class MapManager {
       )
     );
 
-    // False Northing for Southern Hemisphere
     const isSouth = lat < 0;
     if (isSouth) {
       northing += 10000000;
@@ -249,20 +275,41 @@ class MapManager {
   }
 
   setupCoordinatesTracker() {
+    const coordToggleBtn = document.getElementById("btn-coord-toggle");
+    const coordPopover = document.getElementById("coord-popover-box");
     const latSpan = document.getElementById("coord-lat");
     const lngSpan = document.getElementById("coord-lng");
     const utmSpan = document.getElementById("coord-utm");
     const zoomSpan = document.getElementById("coord-zoom");
+    const buttonCoordText = document.getElementById("coord-btn-preview");
+
+    if (coordToggleBtn && coordPopover) {
+      coordToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        coordPopover.classList.toggle("open");
+        coordToggleBtn.classList.toggle("active");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!coordPopover.contains(e.target) && e.target !== coordToggleBtn) {
+          coordPopover.classList.remove("open");
+          coordToggleBtn.classList.remove("active");
+        }
+      });
+    }
 
     if (!latSpan || !lngSpan) return;
 
     this.map1.on("mousemove", e => {
-      // Normalize wrapped longitude to strictly [-180, 180]
       const lat = e.latlng.lat;
       const wrappedLng = e.latlng.wrap().lng;
 
       latSpan.textContent = lat.toFixed(5) + "°";
       lngSpan.textContent = wrappedLng.toFixed(5) + "°";
+
+      if (buttonCoordText) {
+        buttonCoordText.textContent = `${lat.toFixed(3)}°, ${wrappedLng.toFixed(3)}°`;
+      }
 
       if (utmSpan) {
         const utmData = this.calcSIRGAS2000UTM(lat, wrappedLng);
@@ -277,6 +324,18 @@ class MapManager {
     this.map1.on("zoomend", () => {
       if (zoomSpan) zoomSpan.textContent = "Zoom " + this.map1.getZoom();
     });
+  }
+
+  addLayer(layer) {
+    if (this.map1 && layer) {
+      layer.addTo(this.map1);
+    }
+  }
+
+  removeLayer(layer) {
+    if (this.map1 && layer) {
+      this.map1.removeLayer(layer);
+    }
   }
 
   fitBounds(bounds) {

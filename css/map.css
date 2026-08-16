@@ -123,93 +123,274 @@
   color: var(--color-terracotta-light);
 }
 
-/* Coordinates & SIRGAS 2000 Status Bar (Non-overlapping) */
-.map-coordinates-bar {
+/* ==========================================================================
+   COLLAPSIBLE COORDINATES BUTTON & POPOVER (IMAGE 1 FIX)
+   ========================================================================== */
+.coord-control-container {
   position: absolute;
-  bottom: 12px;
+  bottom: 14px;
   left: calc(var(--sidebar-width) + 14px);
-  z-index: 800;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  background: rgba(20, 18, 16, 0.92);
-  backdrop-filter: blur(8px);
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-subtle);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  box-shadow: var(--shadow-md);
+  z-index: 850;
   transition: left var(--transition-normal);
-  white-space: nowrap;
-  max-width: calc(100vw - var(--sidebar-width) - 360px);
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-#app-container.sidebar-collapsed .map-coordinates-bar {
+#app-container.sidebar-collapsed .coord-control-container {
   left: 14px;
-  max-width: calc(100vw - 360px);
 }
 
-.coord-item strong {
-  color: var(--text-primary);
-}
-
-.coord-item .badge-sirgas {
-  background: rgba(234, 88, 12, 0.25);
-  color: var(--color-terracotta-light);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 700;
-  margin-right: 4px;
-}
-
-.coord-divider {
-  width: 1px;
-  height: 12px;
-  background: var(--border-subtle);
-  flex-shrink: 0;
-}
-
-/* Basemap Switcher Floating Pill */
-.basemap-switcher-pill {
-  position: absolute;
-  bottom: 12px;
-  right: 14px;
-  z-index: 800;
-  display: flex;
-  background: rgba(20, 18, 16, 0.92);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  padding: 3px;
-  box-shadow: var(--shadow-md);
-}
-
-.basemap-option-btn {
+.floating-coord-btn {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.6rem;
+  gap: 0.45rem;
+  background: rgba(20, 18, 16, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-medium);
   border-radius: var(--radius-full);
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.72rem;
+  padding: 0.4rem 0.85rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-md);
   transition: all var(--transition-fast);
 }
 
-.basemap-option-btn:hover {
+.floating-coord-btn i {
+  color: var(--color-terracotta);
+  width: 14px;
+  height: 14px;
+}
+
+.floating-coord-btn .coord-arrow-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.floating-coord-btn:hover {
+  border-color: var(--color-terracotta);
+  background: rgba(30, 26, 23, 0.98);
+}
+
+.floating-coord-btn.active {
+  border-color: var(--color-terracotta);
+  background: rgba(36, 28, 24, 0.98);
+  box-shadow: 0 0 12px rgba(234, 88, 12, 0.25);
+}
+
+.floating-coord-btn.active .coord-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.coord-popover-box {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: rgba(20, 18, 16, 0.97);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.coord-popover-box.open {
+  display: flex;
+}
+
+.coord-popover-header {
+  padding: 0.55rem 0.85rem;
+  background: rgba(34, 28, 25, 0.9);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.basemap-option-btn.active {
-  background: var(--color-terracotta);
+.coord-popover-body {
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+}
+
+.coord-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.25rem;
+}
+
+.coord-row.full {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.coord-lbl {
+  color: var(--text-muted);
+}
+
+.coord-val {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.badge-sirgas {
+  background: rgba(234, 88, 12, 0.25);
+  color: var(--color-terracotta-light);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.68rem;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   BASEMAP SWITCHER DROPDOWN (IMAGE 2 FIX)
+   ========================================================================== */
+.basemap-control-container {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 850;
+}
+
+.floating-basemap-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(20, 18, 16, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  padding: 0.45rem 0.95rem;
+  color: var(--text-primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.floating-basemap-btn i {
+  color: #38bdf8;
+  width: 15px;
+  height: 15px;
+}
+
+.floating-basemap-btn .basemap-arrow-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.floating-basemap-btn:hover {
+  border-color: #38bdf8;
+  background: rgba(24, 28, 32, 0.98);
+}
+
+.floating-basemap-btn.active {
+  border-color: #38bdf8;
+  background: rgba(18, 30, 40, 0.98);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.floating-basemap-btn.active .basemap-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.basemap-dropdown-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: rgba(20, 18, 16, 0.97);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.basemap-dropdown-menu.open {
+  display: flex;
+}
+
+.basemap-menu-header {
+  padding: 0.55rem 0.85rem;
+  background: rgba(30, 26, 23, 0.9);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.basemap-menu-items {
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.basemap-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.basemap-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.basemap-menu-item.active {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
   color: #ffffff;
+}
+
+.basemap-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.basemap-item-text strong {
+  font-size: 0.76rem;
+  color: var(--text-primary);
+}
+
+.basemap-item-text span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
 }
 
 /* ==========================================================================
