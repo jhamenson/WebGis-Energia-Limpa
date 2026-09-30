@@ -1,0 +1,720 @@
+/**
+ * =============================================================================
+ * [PT-BR] SISTEMA DE DESIGN & ESTILOS GERAIS (MOBILE-FIRST)
+ * [EN] BASE DESIGN SYSTEM & GENERAL STYLESHEET (MOBILE-FIRST)
+ * =============================================================================
+ * Projeto: Energia Limpa, Vida Sustentável
+ * Elaboração feita por: Jhamenson Nascimento
+ * Referência Geodésica: SIRGAS 2000 (EPSG:4674)
+ * 
+ * [PT-BR] Arquitetura CSS responsiva mobile-first com breakpoints em 768px (tablet)
+ *         e 1024px (desktop), sistema de cores socioambiental e tipografia.
+ * [EN] Mobile-first responsive CSS architecture with 768px (tablet) and 1024px
+ *         (desktop) breakpoints, socioenvironmental palette, and typography.
+ * =============================================================================
+ */
+
+:root {
+  /* =========================================================================
+     [PT-BR] PALETA DE CORES (TEMÁTICA SOCIOAMBIENTAL & INDÍGENA)
+     [EN] COLOR TOKENS (SOCIOENVIRONMENTAL & INDIGENOUS PALETTE)
+     ========================================================================= */
+  --bg-primary: #12100e;
+  --bg-secondary: #1a1715;
+  --bg-tertiary: #24201d;
+  --bg-card: #1f1b18;
+  --bg-hover: #2e2925;
+
+  --border-subtle: rgba(234, 88, 12, 0.15);
+  --border-medium: rgba(234, 88, 12, 0.35);
+  --border-strong: rgba(234, 88, 12, 0.6);
+
+  --color-terracotta: #ea580c;
+  --color-terracotta-light: #fb923c;
+  --color-ochre: #d97706;
+  --color-emerald: #10b981;
+  --color-amber: #f59e0b;
+  --color-cyan: #0ea5e9;
+
+  --text-primary: #fafaf9;
+  --text-secondary: #d6d3d1;
+  --text-muted: #a8a29e;
+
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.8);
+
+  /* Dimensões Base Mobile (< 768px) / Mobile Base Dimensions */
+  --header-height: 56px;
+  --sidebar-width: 100vw;
+  --touch-min-size: 44px;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-sheet: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =============================================================================
+   [PT-BR] BARRA DE ROLAGEM CUSTOMIZADA TEMÁTICA
+   [EN] CUSTOM THEMED SCROLLBARS
+   ============================================================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(234, 88, 12, 0.5) rgba(20, 18, 16, 0.7);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(18, 16, 14, 0.85);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(234, 88, 12, 0.4);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-terracotta);
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.6);
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   [PT-BR] ESTRUTURA DO APLICATIVO MOBILE-FIRST (< 768px)
+   [EN] MOBILE-FIRST APP CONTAINER LAYOUT (< 768px)
+   ============================================================================= */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* =============================================================================
+   [PT-BR] CABEÇALHO DA APLICAÇÃO (HEADER)
+   [EN] APPLICATION TOP HEADER
+   ============================================================================= */
+.geoportal-header {
+  height: var(--header-height);
+  background: rgba(24, 21, 19, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.65rem;
+  z-index: 1000;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  gap: 0.5rem;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.brand-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  min-width: var(--touch-min-size);
+  min-height: var(--touch-min-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.brand-toggle-btn:hover, .brand-toggle-btn:active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.brand-logo-img {
+  height: 34px;
+  width: 34px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-text h1 {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.brand-text p {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  display: none; /* Oculto em telas pequenas / Hidden on compact screens */
+}
+
+/* =============================================================================
+   [PT-BR] CAMPO DE BUSCA GLOBAL AUTOCOMPLETE
+   [EN] GLOBAL SEARCH AUTOCOMPLETE FIELD
+   ============================================================================= */
+.header-search-box {
+  flex: 1;
+  max-width: 360px;
+  position: relative;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-input-wrapper i[data-lucide="search"] {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.header-search-input {
+  width: 100%;
+  height: 36px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 0 2rem 0 2rem;
+  color: var(--text-primary);
+  font-size: 0.74rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.header-search-input:focus {
+  border-color: var(--color-terracotta);
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: none;
+  padding: 4px;
+}
+
+.search-results-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: rgba(24, 21, 19, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  z-index: 1100;
+}
+
+.search-result-item {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.search-result-item:hover, .search-result-item:active {
+  background: var(--bg-hover);
+}
+
+.search-item-info strong {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+}
+
+.search-item-info span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.search-item-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(234, 88, 12, 0.15);
+  color: var(--color-terracotta-light);
+}
+
+/* =============================================================================
+   [PT-BR] BOTÕES DE AÇÃO DO CABEÇALHO (TOUCH MÍNIMO 44PX)
+   [EN] HEADER ACTION CONTROLS (MIN TOUCH 44PX)
+   ============================================================================= */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  min-height: var(--touch-min-size);
+  min-width: var(--touch-min-size);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.header-btn span {
+  display: none;
+}
+
+.header-btn:hover, .header-btn:active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+.header-btn.primary {
+  background: var(--color-terracotta);
+  border-color: var(--color-terracotta);
+  color: #ffffff;
+}
+
+.header-btn.primary:hover, .header-btn.primary:active {
+  background: var(--color-terracotta-light);
+}
+
+/* =============================================================================
+   [PT-BR] BARRA LATERAL & GAVETA INFERIOR MOBILE (BOTTOM SHEET 55VH)
+   [EN] SIDEBAR & MOBILE BOTTOM SHEET (55VH MAX HEIGHT)
+   ============================================================================= */
+.geoportal-sidebar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  max-height: 55vh;
+  height: 55vh;
+  background: rgba(20, 18, 16, 0.98);
+  backdrop-filter: blur(16px);
+  border-top: 2px solid var(--color-terracotta);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  z-index: 950;
+  transform: translateY(105%);
+  transition: transform var(--transition-sheet);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.geoportal-sidebar.bottom-sheet-open {
+  transform: translateY(0);
+}
+
+.bottom-sheet-handle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.85rem 0.2rem 0.85rem;
+  background: rgba(30, 26, 23, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.bottom-sheet-drag-pill {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-full);
+  margin: 0 auto;
+}
+
+.bottom-sheet-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  min-width: var(--touch-min-size);
+  min-height: var(--touch-min-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.bottom-sheet-close-btn:hover, .bottom-sheet-close-btn:active {
+  color: var(--color-terracotta-light);
+}
+
+/* =============================================================================
+   [PT-BR] ABAS DE NAVEGAÇÃO DA BARRA LATERAL
+   [EN] SIDEBAR NAVIGATION TABS
+   ============================================================================= */
+.sidebar-nav-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.sidebar-tab-btn {
+  padding: 0.45rem 0.3rem;
+  min-height: var(--touch-min-size);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-tab-btn:hover, .sidebar-tab-btn:active {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.sidebar-tab-btn.active {
+  color: var(--color-terracotta-light);
+  border-bottom-color: var(--color-terracotta);
+  background: rgba(234, 88, 12, 0.08);
+}
+
+.sidebar-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem;
+  display: none;
+}
+
+.sidebar-tab-content.active {
+  display: block;
+}
+
+/* Modal em tela cheia para o Dicionário no celular */
+/* Fullscreen modal for Dictionary on mobile (< 768px) */
+.sidebar-tab-content#tab-metadata.fullscreen-mobile-open {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 2200 !important;
+  background: rgba(18, 16, 14, 0.99) !important;
+  padding: 1.25rem 1rem !important;
+  display: block !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.dict-mobile-close {
+  display: none;
+  min-width: var(--touch-min-size);
+  min-height: var(--touch-min-size);
+}
+
+.sidebar-tab-content#tab-metadata.fullscreen-mobile-open .dict-mobile-close {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-header h2 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.section-description {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+/* =============================================================================
+   [PT-BR] CARDS DE MÉTRICAS E INDICADORES (KPI GRID)
+   [EN] METRIC CARDS & KPI GRID
+   ============================================================================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.kpi-icon-box {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-icon-box.terracotta { background: rgba(234, 88, 12, 0.15); color: var(--color-terracotta-light); }
+.kpi-icon-box.amber { background: rgba(245, 158, 11, 0.15); color: var(--color-amber); }
+.kpi-icon-box.emerald { background: rgba(16, 185, 129, 0.15); color: var(--color-emerald); }
+.kpi-icon-box.blue { background: rgba(14, 165, 233, 0.15); color: var(--color-cyan); }
+
+.kpi-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.kpi-label {
+  font-size: 0.64rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: normal;
+  line-height: 1.25;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.kpi-value {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-subtext {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+  margin-top: 1px;
+}
+
+.chart-wrapper-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.chart-canvas-box {
+  height: 140px;
+  position: relative;
+  width: 100%;
+}
+
+/* =============================================================================
+   [PT-BR] RECOLHIMENTO DA BARRA LATERAL (SIDEBAR COLLAPSED DESKTOP & TABLET)
+   [EN] COLLAPSIBLE SIDEBAR RULES (DESKTOP & TABLET)
+   ============================================================================= */
+#app-container.sidebar-collapsed .geoportal-sidebar {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+#app-container.sidebar-collapsed #btn-toggle-sidebar {
+  background: rgba(234, 88, 12, 0.2);
+  color: var(--color-terracotta-light);
+  border: 1px solid rgba(234, 88, 12, 0.4);
+}
+
+/* =============================================================================
+   [PT-BR] BREAKPOINT: TABLET (768px - 1199px)
+   [EN] BREAKPOINT: TABLET (768px - 1199px)
+   ============================================================================= */
+@media (min-width: 768px) {
+  :root {
+    --header-height: 58px;
+    --sidebar-width: 360px;
+  }
+
+  #app-container {
+    flex-direction: row;
+    padding-top: var(--header-height);
+  }
+
+  .geoportal-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0 1rem;
+  }
+
+  .brand-text p {
+    display: block;
+  }
+
+  .header-btn span {
+    display: inline;
+  }
+
+  .geoportal-sidebar {
+    position: relative;
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    max-height: none;
+    height: 100%;
+    transform: none !important;
+    border-top: none;
+    border-right: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .bottom-sheet-handle-bar {
+    display: none;
+  }
+
+  .chart-canvas-box {
+    height: 160px;
+  }
+}
+
+/* =============================================================================
+   [PT-BR] BREAKPOINT: DESKTOP LARGO (>= 1200px)
+   [EN] BREAKPOINT: LARGE DESKTOP (>= 1200px)
+   ============================================================================= */
+@media (min-width: 1200px) {
+  :root {
+    --sidebar-width: 400px;
+  }
+
+  .brand-text h1 {
+    font-size: 0.94rem;
+  }
+
+  .brand-text p {
+    font-size: 0.68rem;
+  }
+
+  .chart-canvas-box {
+    height: 180px;
+  }
+}
